@@ -17,11 +17,10 @@ export function MenuList() {
   if (items.length === 0) {
     return <EmptyState message="No menu items found" />
   }
-
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {items.map((item) => (
-        <Card key={item.id}>
+      {items.map((item, idx) => (
+        <Card key={idx}>
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg">{item.name}</CardTitle>
@@ -41,7 +40,7 @@ export function MenuList() {
                 <Button
                   variant="destructive"
                   size="sm"
-                  onClick={() => deleteMenuItem(item.id)}
+                  onClick={() => deleteMenuItem(item._id)}
                 >
                   Delete
                 </Button>

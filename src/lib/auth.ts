@@ -1,8 +1,9 @@
+import { env } from '@/config/env'
 import jwt from 'jsonwebtoken'
 import { Types } from 'mongoose'
 
-const JWT_SECRET = process.env.JWT_SECRET as string
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d'
+const JWT_SECRET = env.JWT_SECRET as string
+const JWT_EXPIRES_IN = env.JWT_EXPIRES_IN || '7d'
 
 export interface JwtPayload {
   userId: string

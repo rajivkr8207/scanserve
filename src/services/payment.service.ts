@@ -1,3 +1,4 @@
+import { env } from '@/config/env'
 import crypto from 'crypto'
 import { connectDB } from '@/lib/db'
 import { razorpay } from '@/lib/razorpay'
@@ -46,7 +47,7 @@ export const paymentService = {
 
     // HMAC-SHA256 verification
     const expectedSignature = crypto
-      .createHmac('sha256', process.env.RAZORPAY_KEY_SECRET ?? '')
+      .createHmac('sha256', env.RAZORPAY_KEY_SECRET)
       .update(`${razorpayOrderId}|${razorpayPaymentId}`)
       .digest('hex')
 
@@ -69,7 +70,7 @@ export const paymentService = {
   },
 
   async handleWebhook(body: Record<string, unknown>, signature: string) {
-    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET ?? ''
+    const webhookSecret = env.RAZORPAY_WEBHOOK_SECRET
     if (!webhookSecret) throw new Error('Webhook secret not configured')
 
     const expectedSignature = crypto

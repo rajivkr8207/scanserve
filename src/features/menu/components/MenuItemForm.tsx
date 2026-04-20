@@ -21,10 +21,11 @@ const menuItemSchema = z.object({
 type MenuItemFormData = z.infer<typeof menuItemSchema>
 
 interface MenuItemFormProps {
+  restaurantId: string
   onSuccess?: () => void
 }
 
-export function MenuItemForm({ onSuccess }: MenuItemFormProps) {
+export function MenuItemForm({ restaurantId, onSuccess }: MenuItemFormProps) {
   const { createMenuItem, loading } = useMenu()
   const {
     register,
@@ -39,10 +40,11 @@ export function MenuItemForm({ onSuccess }: MenuItemFormProps) {
   })
 
   const onSubmit = async (data: MenuItemFormData) => {
-    await createMenuItem(data)
+    await createMenuItem({ ...data, restaurantId })
     reset()
     onSuccess?.()
   }
+
 
   return (
     <Card className="w-full max-w-md">

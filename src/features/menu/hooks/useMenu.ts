@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { setLoading, setItems, addItem, updateItem, deleteItem, setError } from '../store/menu.slice'
 import { menuService, CreateMenuItemRequest } from '../services/menu.service'
@@ -10,7 +10,7 @@ export const useMenu = () => {
   const dispatch = useAppDispatch()
   const { items, loading, error } = useAppSelector((state) => state.menu)
 
-  const fetchMenuItems = async () => {
+  const fetchMenuItems = useCallback(async () => {
     try {
       dispatch(setLoading(true))
       dispatch(setError(null))
@@ -22,7 +22,7 @@ export const useMenu = () => {
     } finally {
       dispatch(setLoading(false))
     }
-  }
+  }, [dispatch])
 
   const createMenuItem = async (data: CreateMenuItemRequest) => {
     try {

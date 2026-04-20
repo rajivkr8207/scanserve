@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { setLoading, setUser, setToken, logout } from '../store/auth.slice'
+import { setLoading, setUser, setToken, logout, setError } from '../store/auth.slice'
 import { authService, LoginRequest, RegisterRequest } from '../services/auth.service'
 import { toast } from 'react-hot-toast'
 
@@ -15,6 +15,7 @@ export const useAuth = () => {
   const login = async (data: LoginRequest) => {
     try {
       dispatch(setLoading(true))
+      dispatch(setError(null))
       const response = await authService.login(data)
       dispatch(setUser(response.user))
       dispatch(setToken(response.token))
@@ -57,15 +58,17 @@ export const useAuth = () => {
   }
 
   const checkAuth = async () => {
-    const token = localStorage.getItem('token')
     if (token && !isAuthenticated) {
       try {
-        dispatch(setToken(token))
+        dispatch(setLoading(true))
+        dispatch(setError(null))
         const user = await authService.getProfile()
         dispatch(setUser(user))
       } catch (error) {
         localStorage.removeItem('token')
         dispatch(logout())
+      } finally {
+        dispatch(setLoading(false))
       }
     }
   }

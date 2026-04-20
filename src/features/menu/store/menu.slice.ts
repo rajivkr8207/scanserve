@@ -21,13 +21,13 @@ export const menuSlice = createSlice({
       state.items.push(action.payload)
     },
     updateItem: (state, action: PayloadAction<MenuItem>) => {
-      const index = state.items.findIndex(item => item.id === action.payload.id)
+      const index = state.items.findIndex(item => item._id === action.payload._id)
       if (index !== -1) {
         state.items[index] = action.payload
       }
     },
     deleteItem: (state, action: PayloadAction<string>) => {
-      state.items = state.items.filter(item => item.id !== action.payload)
+      state.items = state.items.filter(item => item._id !== action.payload)
     },
     setError: (state, action: PayloadAction<string | null>) => {
       state.error = action.payload

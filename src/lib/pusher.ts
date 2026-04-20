@@ -1,15 +1,17 @@
+import { env } from '@/config/env'
 import Pusher from 'pusher'
 
 const pusherConfig = {
-  appId: process.env.PUSHER_APP_ID || '',
-  key: process.env.PUSHER_KEY || '',
-  secret: process.env.PUSHER_SECRET || '',
-  cluster: process.env.PUSHER_CLUSTER || 'ap2',
+  appId: env.PUSHER_APP_ID,
+  key: env.PUSHER_KEY,
+  secret: env.PUSHER_SECRET,
+  cluster: env.PUSHER_CLUSTER,
   useTLS: true,
 }
 
+
 // Singleton Pusher instance
-const pusher = (pusherConfig.appId) 
+const pusher = (pusherConfig.appId)
   ? new Pusher(pusherConfig)
   : null
 

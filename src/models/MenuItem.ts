@@ -2,6 +2,7 @@ import mongoose, { Document, Model, Schema, Types } from 'mongoose'
 
 export interface IMenuItem extends Document {
   restaurantId: Types.ObjectId
+  userId: string
   name: string
   description?: string
   price: number
@@ -17,6 +18,11 @@ const MenuItemSchema = new Schema<IMenuItem>(
     restaurantId: {
       type: Schema.Types.ObjectId,
       ref: 'Restaurant',
+      required: true,
+      index: true,
+    },
+    userId: {
+      type: String,
       required: true,
       index: true,
     },

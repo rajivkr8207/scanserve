@@ -4,6 +4,7 @@ import { AuthService } from './user.service.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { generateToken } from '../../utils/generateToken.js';
+import type { DecodedToken } from '../../../../shared/types/user.type.js';
 
 export const registerUser = asyncHandler(async (req: Request, res: Response) => {
     const { fullName, username, email, password, phoneno } = req.body;
@@ -41,9 +42,10 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     if (!isPasswordValid) {
         throw new ApiError(401, 'Invalid password');
     }
-    const payload = {
-        id: user._id,
+    const payload: DecodedToken = {
+        id: user._id.toString(),
         role: user.role,
+        username: user.username,
     };
     const token = generateToken(payload);
     res.cookie('token', token, {
@@ -101,7 +103,9 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
     user.forgotPasswordOtp = otp.toString();
     user.forgotPasswordExpire = new Date(Date.now() + 1000 * 60 * 15);
     await user.save();
-    return res.status(200).json(new ApiResponse(200, user, 'User reset password sent Otp successfully'));
+    return res
+        .status(200)
+        .json(new ApiResponse(200, user, 'User reset password sent Otp successfully'));
 });
 
 export const resetPassword = asyncHandler(async (req: Request, res: Response) => {

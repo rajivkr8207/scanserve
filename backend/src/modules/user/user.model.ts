@@ -12,6 +12,14 @@ export interface IUser extends Document {
     phoneno: string;
     otp?: string;
     otpExpire?: Date;
+    BanDetails: {
+        isBan: boolean;
+        BanReason: string;
+        BanBy: string;
+        BanAt: Date;
+        UnBanAt: Date;
+        UnBanBy: string;
+    };
     forgotPasswordOtp?: string;
     forgotPasswordExpire?: Date;
     role: UserRole;
@@ -66,11 +74,39 @@ const userSchema = new Schema<IUser>(
         otp: {
             type: String,
         },
+        BanDetails: {
+            type: {
+                isBan: {
+                    type: Boolean,
+                    default: false,
+                },
+                BanReason: {
+                    type: String,
+                },
+                BanBy: {
+                    type: String,
+                },
+                BanAt: {
+                    type: Date,
+                    default: Date.now,
+                },
+                UnBanAt: {
+                    type: Date,
+                },
+                UnBanBy: {
+                    type: String,
+                },
+
+            },
+            default: {
+                isBan: false,
+                BanReason: '',
+            },
+        },
 
         otpExpire: {
             type: Date,
         },
-
         forgotPasswordOtp: {
             type: String,
         },

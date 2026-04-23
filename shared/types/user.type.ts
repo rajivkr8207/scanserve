@@ -3,3 +3,11 @@ export enum UserRole {
     SELLER = "SELLER",
     MANAGER = "MANAGER",
 }
+
+
+
+export interface DecodedToken {
+    id: string;
+    role: UserRole;
+    username: string;
+}

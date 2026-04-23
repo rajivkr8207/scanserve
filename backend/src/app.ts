@@ -5,6 +5,8 @@ import { appMiddleware } from './app.middleware.js';
 import userRouter from './modules/user/user.route.js';
 import adminRouter from './modules/admin/admin.route.js';
 import restaurantRouter from './modules/resturant/restaurant.route.js';
+import categoryRouter from './modules/category/category.route.js';
+import menuRouter from './modules/menu/menu.route.js';
 
 const app = express();
 
@@ -16,6 +18,9 @@ app.use('/api/v1/health', healthRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/restaurant', restaurantRouter);
+app.use('/api/v1/category', categoryRouter);
+app.use('/api/v1/menu', menuRouter);
+
 // error middleware
 app.use(errorMiddleware);
 

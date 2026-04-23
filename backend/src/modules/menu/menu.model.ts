@@ -1,19 +1,12 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
+import type { IMenuItem as ISharedMenuItem } from '../../../../shared/types/menu.type.js';
 
-export interface IMenuItem extends Document {
+export interface IMenuItem
+  extends
+    Document,
+    Omit<ISharedMenuItem, '_id' | 'restaurant' | 'category' | 'createdAt' | 'updatedAt'> {
   restaurant: Types.ObjectId;
   category: Types.ObjectId;
-  name: string;
-  description?: string;
-  price: number;
-  discountPrice?: number;
-  image?: string;
-  isVeg: boolean;
-  isAvailable: boolean;
-  preparationTime: number;
-  tags: string[];
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 const menuItemSchema = new Schema<IMenuItem>(

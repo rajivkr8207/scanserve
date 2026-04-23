@@ -15,7 +15,7 @@ appMiddleware(app);
 
 // app routes
 app.use('/api/v1/health', healthRouter);
-app.use('/api/v1/user', userRouter);
+app.use('/api/v1/auth', userRouter);
 app.use('/api/v1/admin', adminRouter);
 app.use('/api/v1/restaurant', restaurantRouter);
 app.use('/api/v1/category', categoryRouter);

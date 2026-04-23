@@ -1,11 +1,12 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
-export interface IMenuCategory extends Document {
+import type { IMenuCategory as ISharedCategory } from '../../../../shared/types/category.type.js';
+
+export interface IMenuCategory
+  extends
+    Document,
+    Omit<ISharedCategory, '_id' | 'restaurant' | 'seller' | 'createdAt' | 'updatedAt'> {
   restaurant: Types.ObjectId;
   seller: Types.ObjectId;
-  name: string;
-  description?: string;
-  isActive: boolean;
-  sortOrder: number;
 }
 
 const menuCategorySchema = new Schema<IMenuCategory>(

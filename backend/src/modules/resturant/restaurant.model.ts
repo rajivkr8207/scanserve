@@ -1,34 +1,9 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
+import type { IRestaurant as ISharedRestaurant } from '../../../../shared/types/restaurant.type.js';
 
-export interface IRestaurant extends Document {
+export interface IRestaurant
+  extends Document, Omit<ISharedRestaurant, '_id' | 'seller' | 'createdAt' | 'updatedAt'> {
   seller: Types.ObjectId;
-  name: string;
-  slug: string;
-  description?: string;
-  address: {
-    street: string;
-    city: string;
-    state: string;
-    pincode: string;
-    country: string;
-  };
-  contact: {
-    phone: string;
-    email?: string;
-  };
-  logo?: string;
-  coverImage?: string;
-  cuisineTypes: string[];
-  isActive: boolean;
-  isOpen: boolean;
-  openingHours: {
-    day: string;
-    openTime: string;
-    closeTime: string;
-    isClosed: boolean;
-  }[];
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 const restaurantSchema = new Schema<IRestaurant>(

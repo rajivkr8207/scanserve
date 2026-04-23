@@ -9,7 +9,6 @@ export const createMenuItem = asyncHandler(async (req: Request, res: Response) =
 });
 
 export const getMenuItems = asyncHandler(async (req: Request, res: Response) => {
-
     const menuItems = await MenuService.getAllMenuItems(req.user.id);
     return res.status(200).json(new ApiResponse(200, menuItems, 'Menu items fetched successfully'));
 });

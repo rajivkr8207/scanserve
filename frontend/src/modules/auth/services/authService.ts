@@ -16,22 +16,29 @@ export interface AuthResponse {
 
 export const authService = {
   register: async (dto: RegisterDto): Promise<{ message: string }> => {
+    console.log(dto);
     const res = await api.post('/auth/register', dto);
     return res.data;
   },
 
   login: async (dto: LoginDto): Promise<AuthResponse> => {
     const res = await api.post('/auth/login', dto);
+    console.log(res.data);
     return res.data.data;
   },
 
   verifyOtp: async (dto: VerifyOtpDto): Promise<AuthResponse> => {
-    const res = await api.post('/auth/verify-otp', dto);
+    const res = await api.post(`/auth/verify/${dto.email}`, { otp: dto.otp });
     return res.data.data;
   },
 
+  verifyForgotPasswordOtp: async (email: string, otp: string): Promise<{ message: string }> => {
+    const res = await api.post(`/auth/verify-reset/${email}`, { otp });
+    return res.data;
+  },
+
   resendOtp: async (email: string): Promise<{ message: string }> => {
-    const res = await api.post('/auth/resend-otp', { email });
+    const res = await api.post(`/auth/resend-otp/${email}`);
     return res.data;
   },
 
@@ -41,7 +48,10 @@ export const authService = {
   },
 
   resetPassword: async (dto: ResetPasswordDto): Promise<{ message: string }> => {
-    const res = await api.post('/auth/reset-password', dto);
+    const res = await api.post(`/auth/reset-password/${dto.email}`, {
+      otp: dto.otp,
+      password: dto.newPassword,
+    });
     return res.data;
   },
 

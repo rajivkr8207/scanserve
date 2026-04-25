@@ -26,3 +26,11 @@ export const patchRestaurantBasic = asyncHandler(async (req: Request, res: Respo
   const restaurant = await RestaurantService.patchRestaurant(req.user.id, req.body);
   return res.status(200).json(new ApiResponse(200, restaurant, 'Restaurant updated successfully'));
 });
+export const getPublicRestaurantBySlug = asyncHandler(async (req: Request, res: Response) => {
+  const { slug } = req.params;
+  const restaurant = await RestaurantService.getPublicRestaurantBySlug(slug);
+  if (!restaurant) {
+    throw new ApiError(404, 'Restaurant not found');
+  }
+  return res.status(200).json(new ApiResponse(200, restaurant, 'Restaurant fetched successfully'));
+});

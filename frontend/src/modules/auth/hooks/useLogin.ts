@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '../services/authService';
-import { useAuthStore } from '@/store/authStore';
+import { useAppDispatch } from '@/store/hooks';
+import { setAuth, setPendingEmail } from '@/store/slices/authSlice';
 import type { LoginDto } from '@shared/types/user.type';
 
 interface FormErrors {
@@ -14,8 +15,7 @@ interface FormErrors {
 
 export const useLogin = () => {
   const router = useRouter();
-  const setAuth = useAuthStore((s) => s.setAuth);
-  const setPendingEmail = useAuthStore((s) => s.setPendingEmail);
+  const dispatch = useAppDispatch();
 
   const [form, setForm] = useState<LoginDto>({ usernameOrEmail: '', password: '' });
   const [errors, setErrors] = useState<FormErrors>({});
@@ -24,9 +24,7 @@ export const useLogin = () => {
   const validate = (): boolean => {
     const errs: FormErrors = {};
     if (!form.usernameOrEmail.trim()) {
-      errs.usernameOrEmail = 'Email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.usernameOrEmail)) {
-      errs.usernameOrEmail = 'Enter a valid email address';
+      errs.usernameOrEmail = 'Email or username is required';
     }
     if (!form.password) errs.password = 'Password is required';
     setErrors(errs);
@@ -46,13 +44,13 @@ export const useLogin = () => {
     setIsLoading(true);
     try {
       const data = await authService.login(form);
-      setAuth(data.user, data.token);
+      dispatch(setAuth({ user: data.user, token: data.token }));
       router.push('/dashboard');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Login failed';
       // If email not verified, redirect to OTP
       if (message.toLowerCase().includes('verify') || message.toLowerCase().includes('otp')) {
-        setPendingEmail(form.email);
+        dispatch(setPendingEmail(form.usernameOrEmail));
         router.push('/verify-otp?type=REGISTER');
       } else {
         setErrors({ general: message });

@@ -3,18 +3,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { authService } from '../services/authService';
-import { useAuthStore } from '@/store/authStore';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setAuth } from '@/store/slices/authSlice';
 
 const OTP_LENGTH = 6;
 const RESEND_COUNTDOWN = 60;
 
 export const useVerifyOtp = () => {
   const router = useRouter();
+  const dispatch = useAppDispatch();
   const searchParams = useSearchParams();
   const type = (searchParams.get('type') ?? 'REGISTER') as 'REGISTER' | 'FORGOT_PASSWORD';
 
-  const pendingEmail = useAuthStore((s) => s.pendingEmail);
-  const setAuth = useAuthStore((s) => s.setAuth);
+  const pendingEmail = useAppSelector((s) => s.auth.pendingEmail);
 
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [error, setError] = useState<string | null>(null);
@@ -79,11 +80,12 @@ export const useVerifyOtp = () => {
     if (!pendingEmail) return;
     setIsLoading(true);
     try {
-      const data = await authService.verifyOtp({ email: pendingEmail, otp: otpString, type });
       if (type === 'REGISTER') {
-        setAuth(data.user, data.token);
+        const data = await authService.verifyOtp({ email: pendingEmail, otp: otpString, type });
+        dispatch(setAuth({ user: data.user, token: data.token }));
         router.push('/dashboard');
       } else {
+        await authService.verifyForgotPasswordOtp(pendingEmail, otpString);
         router.push(`/reset-password`);
       }
     } catch (err: unknown) {

@@ -8,6 +8,7 @@ import type { DecodedToken } from '../../../../shared/types/user.type.js';
 
 export const registerUser = asyncHandler(async (req: Request, res: Response) => {
   const { fullName, username, email, password, phoneno } = req.body;
+  console.log(req.body)
   const existUser = await AuthService.findByUserNameOrEmail(username, email);
   if (existUser) {
     throw new ApiError(409, 'User already exists');
@@ -30,6 +31,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   if (!user) {
     throw new ApiError(404, 'User not found');
   }
+  console.log(user)
   const isEmailVerifiedUser = user.isEmailVerified;
   if (!isEmailVerifiedUser) {
     throw new ApiError(401, 'Email not verified');
@@ -54,7 +56,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     sameSite: 'strict',
     maxAge: 1000 * 60 * 60 * 24 * 7,
   });
-  return res.status(200).json(new ApiResponse(200, {}, 'User logged in successfully'));
+  return res.status(200).json(new ApiResponse(200, { user, token }, 'User logged in successfully'));
 });
 
 export const Logout = asyncHandler(async (req: Request, res: Response) => {
@@ -77,6 +79,7 @@ export const verifyUser = asyncHandler(async (req: Request, res: Response) => {
   const email = req.params.email as string;
   const { otp } = req.body;
   const user = await AuthService.findByEmail(email);
+  console.log(user)
   if (!user) {
     throw new ApiError(404, 'User not found');
   }
@@ -89,8 +92,23 @@ export const verifyUser = asyncHandler(async (req: Request, res: Response) => {
   user.otp = undefined;
   user.otpExpire = undefined;
   user.isEmailVerified = true;
+  user.isVerified = true; // Automatically verify for now to allow login
   await user.save();
-  return res.status(200).json(new ApiResponse(200, user, 'User verified successfully'));
+
+  const payload: DecodedToken = {
+    id: user._id.toString(),
+    role: user.role,
+    username: user.username,
+  };
+  const token = generateToken(payload);
+  res.cookie('token', token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'strict',
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  });
+
+  return res.status(200).json(new ApiResponse(200, { user, token }, 'User verified successfully'));
 });
 
 export const forgotPassword = asyncHandler(async (req: Request, res: Response) => {
@@ -106,6 +124,23 @@ export const forgotPassword = asyncHandler(async (req: Request, res: Response) =
   return res
     .status(200)
     .json(new ApiResponse(200, user, 'User reset password sent Otp successfully'));
+});
+
+export const verifyForgotPasswordOtp = asyncHandler(async (req: Request, res: Response) => {
+  const email = req.params.email as string;
+  const { otp } = req.body;
+  const user = await AuthService.findByEmail(email);
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+  if (user.forgotPasswordOtp !== otp) {
+    throw new ApiError(400, 'Invalid OTP');
+  }
+  if (!user.forgotPasswordExpire || user.forgotPasswordExpire < new Date()) {
+    throw new ApiError(400, 'OTP expired');
+  }
+  // Don't clear OTP yet, resetPassword needs it
+  return res.status(200).json(new ApiResponse(200, {}, 'OTP verified successfully'));
 });
 
 export const resetPassword = asyncHandler(async (req: Request, res: Response) => {
@@ -127,3 +162,16 @@ export const resetPassword = asyncHandler(async (req: Request, res: Response) =>
   await user.save();
   return res.status(200).json(new ApiResponse(200, user, 'User Reset Password successfully'));
 });
+
+export const ResendOtp = asyncHandler(async (req: Request, res: Response) => {
+  const email = req.params.email as string;
+  const user = await AuthService.findByEmail(email);
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+  const otp = Math.floor(100000 + Math.random() * 900000);
+  user.otp = otp.toString();
+  user.otpExpire = new Date(Date.now() + 1000 * 60 * 15);
+  await user.save();
+  return res.status(200).json(new ApiResponse(200, user, 'User resend otp successfully'));
+})

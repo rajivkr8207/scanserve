@@ -55,8 +55,9 @@ const userSchema = new Schema<IUser>(
     },
     phoneno: {
       type: String,
-      required: true,
+      required: false,
       unique: true,
+      sparse: true,
       trim: true,
     },
 
@@ -134,6 +135,30 @@ const userSchema = new Schema<IUser>(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (_, ret) => {
+        ret.id = ret._id;
+        ret.name = ret.fullName;
+        ret.phone = ret.phoneno;
+        delete ret._id;
+        delete ret.__v;
+        delete ret.password;
+        return ret;
+      },
+    },
+    toObject: {
+      virtuals: true,
+      transform: (_, ret) => {
+        ret.id = ret._id;
+        ret.name = ret.fullName;
+        ret.phone = ret.phoneno;
+        delete ret._id;
+        delete ret.__v;
+        delete ret.password;
+        return ret;
+      },
+    },
   },
 );
 

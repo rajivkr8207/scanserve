@@ -5,9 +5,9 @@ import type { NextRequest } from 'next/server';
 const protectedPaths = ['/dashboard', '/restaurants', '/profile'];
 
 // Paths that should redirect authenticated users away (but NOT verify-otp/reset-password)
-const authOnlyPaths = ['/login', '/register', '/forgot-password'];
+const authOnlyPaths = ['/', '/login', '/register', '/forgot-password'];
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const token = request.cookies.get('token')?.value;
   const { pathname } = request.nextUrl;
 
@@ -20,7 +20,9 @@ export function middleware(request: NextRequest) {
   }
 
   // 2. Auth-only → redirect to dashboard if already logged in
-  const isAuthOnlyPath = authOnlyPaths.some((path) => pathname.startsWith(path));
+  const isAuthOnlyPath = authOnlyPaths.some((path) => 
+    path === '/' ? pathname === '/' : pathname.startsWith(path)
+  );
   if (isAuthOnlyPath && token) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
@@ -30,6 +32,7 @@ export function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
+    '/',
     '/dashboard/:path*',
     '/restaurants/:path*',
     '/profile/:path*',

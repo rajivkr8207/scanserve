@@ -3,6 +3,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 
+import { ReduxProvider } from '@/providers/ReduxProvider';
+
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
@@ -24,9 +26,11 @@ export default function RootLayout({
         )}
         cz-shortcut-listen="true"
       >
-        <main className="relative flex min-h-screen flex-col">
-          {children}
-        </main>
+        <ReduxProvider>
+          <main className="relative flex min-h-screen flex-col">
+            {children}
+          </main>
+        </ReduxProvider>
       </body>
     </html>
   );

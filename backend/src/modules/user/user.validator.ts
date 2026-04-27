@@ -11,8 +11,8 @@ export const userValidator = {
       .isLength({ min: 3 })
       .withMessage('Username must be at least 3 characters long')
       .trim(),
-    body('email').isEmail().withMessage('Invalid email address').normalizeEmail(),
-    body('phoneno').notEmpty().withMessage('Phone number is required').trim(),
+    body('email').isEmail().withMessage('Invalid email address'),
+    body('phoneno').optional().trim(),
     body('password')
       .isLength({ min: 6 })
       .withMessage('Password must be at least 6 characters long'),
@@ -26,7 +26,6 @@ export const userValidator = {
   ],
 
   verify: [
-    param('email').isEmail().withMessage('Invalid email address').normalizeEmail(),
     body('otp').notEmpty().withMessage('OTP is required').isLength({ min: 6, max: 6 }),
     validate,
   ],

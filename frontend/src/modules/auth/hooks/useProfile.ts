@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '../services/authService';
-import { useAuthStore } from '@/store/authStore';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { updateUser, logout } from '@/store/slices/authSlice';
 import type { UpdateProfileDto, ISharedUser } from '@shared/types/user.type';
 
 interface FormErrors {
@@ -14,7 +15,8 @@ interface FormErrors {
 
 export const useProfile = () => {
   const router = useRouter();
-  const { user, updateUser, logout } = useAuthStore();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.auth.user);
 
   const [profile, setProfile] = useState<ISharedUser | null>(null);
   const [form, setForm] = useState<UpdateProfileDto>({ name: '', phone: '' });
@@ -65,7 +67,7 @@ export const useProfile = () => {
     try {
       const updated = await authService.updateProfile(form);
       setProfile(updated);
-      updateUser(updated);
+      dispatch(updateUser(updated));
       setIsEditing(false);
       setSuccessMessage('Profile updated successfully!');
       setTimeout(() => setSuccessMessage(null), 3000);
@@ -83,7 +85,7 @@ export const useProfile = () => {
     } catch {
       // Continue logout even if API fails
     } finally {
-      logout();
+      dispatch(logout());
       router.push('/login');
     }
   };

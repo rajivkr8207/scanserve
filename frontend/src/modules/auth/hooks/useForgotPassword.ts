@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '../services/authService';
-import { useAuthStore } from '@/store/authStore';
+import { useAppDispatch } from '@/store/hooks';
+import { setPendingEmail } from '@/store/slices/authSlice';
 
 interface FormErrors {
   email?: string;
@@ -12,7 +13,7 @@ interface FormErrors {
 
 export const useForgotPassword = () => {
   const router = useRouter();
-  const setPendingEmail = useAuthStore((s) => s.setPendingEmail);
+  const dispatch = useAppDispatch();
 
   const [email, setEmail] = useState('');
   const [errors, setErrors] = useState<FormErrors>({});
@@ -41,7 +42,7 @@ export const useForgotPassword = () => {
     setIsLoading(true);
     try {
       await authService.forgotPassword({ email });
-      setPendingEmail(email);
+      dispatch(setPendingEmail(email));
       setSuccess(true);
       setTimeout(() => router.push('/verify-otp?type=FORGOT_PASSWORD'), 1500);
     } catch (err: unknown) {

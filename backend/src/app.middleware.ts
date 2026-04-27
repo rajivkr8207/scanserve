@@ -38,6 +38,7 @@ export const appMiddleware = (app: express.Application) => {
   app.use(
     cors({
       origin: ['http://localhost:3000'],
+      methods: ["POST", "PUT", "GET", "DELETE", "PATCH"],
       credentials: true,
     }),
   );

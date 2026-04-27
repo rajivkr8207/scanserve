@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '../services/authService';
-import { useAuthStore } from '@/store/authStore';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setPendingEmail } from '@/store/slices/authSlice';
 
 interface ResetForm {
   otp: string;
@@ -20,8 +21,8 @@ interface FormErrors {
 
 export const useResetPassword = () => {
   const router = useRouter();
-  const pendingEmail = useAuthStore((s) => s.pendingEmail);
-  const setPendingEmail = useAuthStore((s) => s.setPendingEmail);
+  const dispatch = useAppDispatch();
+  const pendingEmail = useAppSelector((s) => s.auth.pendingEmail);
 
   const [form, setForm] = useState<ResetForm>({
     otp: '',
@@ -65,7 +66,7 @@ export const useResetPassword = () => {
         newPassword: form.newPassword,
       });
       setSuccess(true);
-      setPendingEmail(null);
+      dispatch(setPendingEmail(null));
       setTimeout(() => router.push('/login'), 2000);
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Reset failed';

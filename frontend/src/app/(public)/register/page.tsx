@@ -29,9 +29,21 @@ export default function RegisterPage() {
             label="Full name"
             type="text"
             placeholder="John Smith"
-            value={form.name}
-            onChange={(e) => handleChange('name', e.target.value)}
-            error={errors.name}
+            value={form.fullName}
+            onChange={(e) => handleChange('fullName', e.target.value)}
+            error={errors.fullName}
+            icon={<User size={17} />}
+            autoComplete="fullName"
+            autoFocus
+          />
+          <AuthInput
+            id="register-username"
+            label="Username"
+            type="text"
+            placeholder="John Smith"
+            value={form.username}
+            onChange={(e) => handleChange('username', e.target.value)}
+            error={errors.username}
             icon={<User size={17} />}
             autoComplete="name"
             autoFocus
@@ -54,9 +66,9 @@ export default function RegisterPage() {
             label="Phone number (optional)"
             type="tel"
             placeholder="+91 98765 43210"
-            value={form.phone}
-            onChange={(e) => handleChange('phone', e.target.value)}
-            error={errors.phone}
+            value={form.phoneno}
+            onChange={(e) => handleChange('phoneno', e.target.value)}
+            error={errors.phoneno}
             icon={<Phone size={17} />}
             autoComplete="tel"
           />

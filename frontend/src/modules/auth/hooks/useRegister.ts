@@ -3,7 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '../services/authService';
-import { useAuthStore } from '@/store/authStore';
+import { useAppDispatch } from '@/store/hooks';
+import { setPendingEmail } from '@/store/slices/authSlice';
 import type { RegisterDto } from '@shared/types/user.type';
 
 interface RegisterForm extends RegisterDto {
@@ -11,9 +12,10 @@ interface RegisterForm extends RegisterDto {
 }
 
 interface FormErrors {
-  name?: string;
+  username?: string;
+  fullName?: string;
   email?: string;
-  phone?: string;
+  phoneno?: string;
   password?: string;
   confirmPassword?: string;
   general?: string;
@@ -21,12 +23,13 @@ interface FormErrors {
 
 export const useRegister = () => {
   const router = useRouter();
-  const setPendingEmail = useAuthStore((s) => s.setPendingEmail);
+  const dispatch = useAppDispatch();
 
   const [form, setForm] = useState<RegisterForm>({
-    name: '',
+    username: '',
+    fullName: '',
     email: '',
-    phone: '',
+    phoneno: '',
     password: '',
     confirmPassword: '',
   });
@@ -35,7 +38,8 @@ export const useRegister = () => {
 
   const validate = (): boolean => {
     const errs: FormErrors = {};
-    if (!form.name.trim()) errs.name = 'Full name is required';
+    if (!form.fullName.trim()) errs.fullName = 'Full name is required';
+    if (!form.username.trim()) errs.username = 'Username is required';
     if (!form.email.trim()) {
       errs.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
@@ -66,12 +70,13 @@ export const useRegister = () => {
     setIsLoading(true);
     try {
       await authService.register({
-        name: form.name,
+        username: form.username,
+        fullName: form.fullName,
         email: form.email,
-        phone: form.phone || undefined,
+        phoneno: form.phoneno || undefined,
         password: form.password,
       });
-      setPendingEmail(form.email);
+      dispatch(setPendingEmail(form.email));
       router.push('/verify-otp?type=REGISTER');
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Registration failed';

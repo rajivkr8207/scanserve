@@ -49,4 +49,9 @@ export const RestaurantService = {
     }
     return restaurant;
   },
+
+  async getPublicRestaurantBySlug(slug: string) {
+    const restaurant = await Restaurant.findOne({ slug, isActive: true });
+    return restaurant;
+  },
 };

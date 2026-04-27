@@ -72,4 +72,14 @@ export const MenuService = {
     }
     return menuItem;
   },
+
+  async getPublicMenuBySlug(slug: string) {
+    const restaurant = await Restaurant.findOne({ slug, isActive: true });
+    if (!restaurant) {
+      throw new ApiError(404, 'Restaurant not found');
+    }
+    return await MenuItem.find({ restaurant: restaurant._id, isAvailable: true }).populate(
+      'category',
+    );
+  },
 };

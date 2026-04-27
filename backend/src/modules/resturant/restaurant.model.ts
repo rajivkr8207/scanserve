@@ -53,6 +53,11 @@ const restaurantSchema = new Schema<IRestaurant>(
       type: Boolean,
       default: false,
     },
+    menuTemplate: {
+      type: String,
+      enum: ['MODERN', 'CLASSIC', 'MINIMAL', 'VIBRANT'],
+      default: 'MODERN',
+    },
     openingHours: [
       {
         day: {

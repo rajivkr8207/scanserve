@@ -64,6 +64,21 @@ export const useRestaurants = () => {
     }
   };
 
+  const patchRestaurant = async (data: Partial<IRestaurant>) => {
+    dispatch(setLoading(true));
+    try {
+      const updated = await restaurantService.patchRestaurantBasic(data);
+      dispatch(updateRestaurantInList(updated));
+      dispatch(setError(null));
+      return updated;
+    } catch (err: any) {
+      dispatch(setError(err.message || 'Failed to update restaurant'));
+      throw err;
+    } finally {
+      dispatch(setLoading(false));
+    }
+  };
+
   return {
     restaurants,
     loading,
@@ -71,5 +86,6 @@ export const useRestaurants = () => {
     fetchRestaurants,
     createRestaurant,
     updateRestaurant,
+    patchRestaurant,
   };
 };

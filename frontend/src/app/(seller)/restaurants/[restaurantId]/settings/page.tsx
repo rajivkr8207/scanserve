@@ -7,9 +7,10 @@ import {
   CheckCircle2, 
   Monitor, 
   Smartphone,
-  Info
+  Info,
+  AlertCircle
 } from 'lucide-react';
-import { restaurantService } from '@/modules/restaurant/services/restaurantService';
+import { useRestaurants } from '@/modules/restaurant/hooks/useRestaurants';
 import { MenuTemplate } from '@shared/types/restaurant.type';
 import type { IRestaurant } from '@shared/types/restaurant.type';
 import { AuthButton } from '@/modules/auth/components/AuthButton';
@@ -17,48 +18,65 @@ import { cn } from '@/lib/utils';
 
 export default function RestaurantSettingsPage({ params }: { params: Promise<{ restaurantId: string }> }) {
   const { restaurantId } = use(params);
-  const [restaurant, setRestaurant] = useState<IRestaurant | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { restaurants, loading: hookLoading, fetchRestaurants, patchRestaurant } = useRestaurants();
+  
+  const [initialLoading, setInitialLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<MenuTemplate>(MenuTemplate.MODERN);
   const [success, setSuccess] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
+
+  // Find the current restaurant from Redux store
+  const restaurant = restaurants.find(r => r._id === restaurantId) || null;
 
   useEffect(() => {
-    const fetchRestaurant = async () => {
+    const loadData = async () => {
       try {
-        // Since we are in the context of the seller, we can just get their restaurant
-        const data = await restaurantService.getMyRestaurants();
-        // Assuming one seller has one restaurant for now based on previous context
-        const res = Array.isArray(data) ? data.find(r => r._id === restaurantId) : data;
-        if (res) {
-          setRestaurant(res);
-          setSelectedTemplate(res.menuTemplate || MenuTemplate.MODERN);
-        }
+        await fetchRestaurants();
       } catch (err) {
         console.error(err);
       } finally {
-        setLoading(false);
+        setInitialLoading(false);
       }
     };
-    fetchRestaurant();
-  }, [restaurantId]);
+    loadData();
+  }, [fetchRestaurants]);
+
+  // Sync selected template when restaurant data loads or updates
+  useEffect(() => {
+    if (restaurant) {
+      setSelectedTemplate(restaurant.menuTemplate || MenuTemplate.MODERN);
+    }
+  }, [restaurant]);
 
   const handleSave = async () => {
     setSaving(true);
+    setSaveError(null);
     try {
-      await restaurantService.updateRestaurant({
+      await patchRestaurant({
         menuTemplate: selectedTemplate
       });
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setSaveError(err?.response?.data?.message || err?.message || 'Failed to save template');
     } finally {
       setSaving(false);
     }
   };
 
-  if (loading) return <div className="p-8 animate-pulse bg-slate-100 rounded-3xl h-64" />;
+  if (initialLoading) return <div className="p-8 animate-pulse bg-slate-100 rounded-3xl h-64" />;
+
+  if (!restaurant) {
+    return (
+      <div className="p-8 text-center">
+        <AlertCircle size={48} className="mx-auto text-slate-300 mb-4" />
+        <h2 className="text-xl font-bold text-slate-900 mb-2">Restaurant Not Found</h2>
+        <p className="text-slate-500">Could not find the restaurant with the given ID.</p>
+      </div>
+    );
+  }
 
   const templates = [
     { 
@@ -91,6 +109,8 @@ export default function RestaurantSettingsPage({ params }: { params: Promise<{ r
     }
   ];
 
+  const hasChanges = selectedTemplate !== (restaurant.menuTemplate || MenuTemplate.MODERN);
+
   return (
     <div className="space-y-8 max-w-5xl mx-auto">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -105,9 +125,19 @@ export default function RestaurantSettingsPage({ params }: { params: Promise<{ r
               Saved Successfully
             </div>
           )}
-          <AuthButton onClick={handleSave} isLoading={saving} className="w-40">
+          {saveError && (
+            <div className="flex items-center gap-2 text-red-600 font-bold animate-in fade-in slide-in-from-right-4">
+              <AlertCircle size={20} />
+              {saveError}
+            </div>
+          )}
+          <AuthButton 
+            onClick={handleSave} 
+            isLoading={saving} 
+            className={cn("w-40", !hasChanges && "opacity-50 cursor-not-allowed")}
+          >
             <Save size={18} className="mr-2" />
-            Save Changes
+            {hasChanges ? 'Save Changes' : 'No Changes'}
           </AuthButton>
         </div>
       </div>
@@ -116,10 +146,13 @@ export default function RestaurantSettingsPage({ params }: { params: Promise<{ r
         {/* Template Selector */}
         <div className="space-y-6">
           <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
-            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+            <h2 className="text-xl font-bold text-slate-900 mb-2 flex items-center gap-2">
               <Layout size={22} className="text-indigo-600" />
               Select Template
             </h2>
+            <p className="text-sm text-slate-500 mb-6">
+              Currently active: <span className="font-bold text-indigo-600">{templates.find(t => t.id === (restaurant.menuTemplate || MenuTemplate.MODERN))?.name}</span>
+            </p>
             
             <div className="grid grid-cols-1 gap-4">
               {templates.map((t) => (

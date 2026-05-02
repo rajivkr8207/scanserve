@@ -16,6 +16,10 @@ export const restaurantValidator = {
     body('address').optional().isObject(),
     body('contact').optional().isObject(),
     body('openingHours').optional().isArray(),
+    body('menuTemplate')
+      .optional()
+      .isIn(['MODERN', 'CLASSIC', 'MINIMAL', 'VIBRANT'])
+      .withMessage('Invalid menu template. Must be one of: MODERN, CLASSIC, MINIMAL, VIBRANT'),
     validate,
   ],
   patchImages: [

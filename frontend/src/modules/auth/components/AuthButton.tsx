@@ -16,7 +16,7 @@ export const AuthButton = ({
   return (
     <button
       disabled={isLoading || disabled}
-      className={`auth-btn auth-btn--${variant} ${isLoading ? 'auth-btn--loading' : ''}`}
+      className={`auth-btn auth-btn--${variant} ${isLoading ? 'auth-btn--loading bg-amber-300' : ''}`}
       {...props}
     >
       {isLoading ? (

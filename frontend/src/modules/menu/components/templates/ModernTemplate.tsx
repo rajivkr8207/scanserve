@@ -23,9 +23,9 @@ const ModernTemplate: React.FC<TemplateProps> = ({ restaurant, menu }) => {
         ) : (
           <div className="w-full h-full bg-gradient-to-br from-indigo-600 to-purple-700 opacity-80" />
         )}
-        
+
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 to-transparent" />
-        
+
         <div className="absolute bottom-0 left-0 right-0 p-6 flex flex-col md:flex-row items-end gap-6">
           <div className="w-24 h-24 bg-white rounded-3xl p-1 shadow-2xl flex-shrink-0">
             <div className="w-full h-full bg-slate-50 rounded-2xl flex items-center justify-center overflow-hidden">
@@ -69,12 +69,12 @@ const ModernTemplate: React.FC<TemplateProps> = ({ restaurant, menu }) => {
             "{restaurant.description}"
           </p>
         )}
-        
+
         <div className="relative mb-12">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-          <input 
-            type="text" 
-            placeholder="Search for dishes..." 
+          <input
+            type="text"
+            placeholder="Search for dishes..."
             className="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl shadow-sm outline-none focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all text-lg"
           />
         </div>
@@ -127,19 +127,19 @@ const ModernTemplate: React.FC<TemplateProps> = ({ restaurant, menu }) => {
           ))}
         </div>
       </div>
-      
+
       {/* Footer info */}
       <div className="max-w-4xl mx-auto px-6 mt-12 py-12 border-t border-slate-200 text-center">
         <p className="text-slate-400 text-sm font-medium mb-4">Crafted with care by</p>
         <div className="flex items-center justify-center gap-2 mb-6">
-           <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
-             <span className="text-white text-xs font-bold">S</span>
-           </div>
-           <span className="text-xl font-black text-slate-900 tracking-tighter">ScanServe</span>
+          <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+            <span className="text-white text-xs font-bold">S</span>
+          </div>
+          <span className="text-xl font-black text-slate-900 tracking-tighter">ScanServe</span>
         </div>
         <div className="flex justify-center gap-6 text-slate-400">
-           <Phone size={18} />
-           <Info size={18} />
+          <Phone size={18} />
+          <Info size={18} />
         </div>
       </div>
     </div>

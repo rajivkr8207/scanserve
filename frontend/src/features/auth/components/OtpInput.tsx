@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 
 interface OtpInputProps {
   otp: string[];
@@ -29,8 +29,8 @@ export const OtpInput = ({
           value={digit}
           disabled={disabled}
           className={`otp-box ${error ? 'otp-box--error' : ''} ${digit ? 'otp-box--filled' : ''}`}
-          onChange={(e) => onChange(index, e.target.value)}
-          onKeyDown={(e) => onKeyDown(index, e)}
+          onChange={(e: any) => onChange(index, e.target.value)}
+          onKeyDown={(e: any) => onKeyDown(index, e)}
           onPaste={index === 0 ? onPaste : undefined}
           autoComplete="one-time-code"
           aria-label={`OTP digit ${index + 1}`}

@@ -1,12 +1,12 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { User, Mail, Phone, Lock } from 'lucide-react';
-import { AuthLayout } from '@/modules/auth/components/AuthLayout';
-import { AuthCard } from '@/modules/auth/components/AuthCard';
-import { AuthInput } from '@/modules/auth/components/AuthInput';
-import { AuthButton } from '@/modules/auth/components/AuthButton';
-import { useRegister } from '@/modules/auth/hooks/useRegister';
+import { AuthLayout } from '@/features/auth/components/AuthLayout';
+import { AuthCard } from '@/features/auth/components/AuthCard';
+import { AuthInput } from '@/features/auth/components/AuthInput';
+import { AuthButton } from '@/features/auth/components/AuthButton';
+import { useRegister } from '@/features/auth/hooks/useRegister';
 
 export default function RegisterPage() {
   const { form, errors, isLoading, handleChange, handleSubmit } = useRegister();
@@ -30,7 +30,7 @@ export default function RegisterPage() {
             type="text"
             placeholder="John Smith"
             value={form.fullName}
-            onChange={(e) => handleChange('fullName', e.target.value)}
+            onChange={(e: any) => handleChange('fullName', e.target.value)}
             error={errors.fullName}
             icon={<User size={17} />}
             autoComplete="fullName"
@@ -42,7 +42,7 @@ export default function RegisterPage() {
             type="text"
             placeholder="John Smith"
             value={form.username}
-            onChange={(e) => handleChange('username', e.target.value)}
+            onChange={(e: any) => handleChange('username', e.target.value)}
             error={errors.username}
             icon={<User size={17} />}
             autoComplete="name"
@@ -55,7 +55,7 @@ export default function RegisterPage() {
             type="email"
             placeholder="you@example.com"
             value={form.email}
-            onChange={(e) => handleChange('email', e.target.value)}
+            onChange={(e: any) => handleChange('email', e.target.value)}
             error={errors.email}
             icon={<Mail size={17} />}
             autoComplete="email"
@@ -67,7 +67,7 @@ export default function RegisterPage() {
             type="tel"
             placeholder="+91 98765 43210"
             value={form.phoneno}
-            onChange={(e) => handleChange('phoneno', e.target.value)}
+            onChange={(e: any) => handleChange('phoneno', e.target.value)}
             error={errors.phoneno}
             icon={<Phone size={17} />}
             autoComplete="tel"
@@ -79,7 +79,7 @@ export default function RegisterPage() {
             type="password"
             placeholder="At least 8 characters"
             value={form.password}
-            onChange={(e) => handleChange('password', e.target.value)}
+            onChange={(e: any) => handleChange('password', e.target.value)}
             error={errors.password}
             icon={<Lock size={17} />}
             autoComplete="new-password"
@@ -91,7 +91,7 @@ export default function RegisterPage() {
             type="password"
             placeholder="Repeat your password"
             value={form.confirmPassword}
-            onChange={(e) => handleChange('confirmPassword', e.target.value)}
+            onChange={(e: any) => handleChange('confirmPassword', e.target.value)}
             error={errors.confirmPassword}
             icon={<Lock size={17} />}
             autoComplete="new-password"

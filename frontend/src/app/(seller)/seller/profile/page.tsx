@@ -1,10 +1,10 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { User, Mail, Phone, Shield, Calendar, Edit2, X, Save, LogOut } from 'lucide-react';
-import { AuthInput } from '@/modules/auth/components/AuthInput';
-import { AuthButton } from '@/modules/auth/components/AuthButton';
-import { useProfile } from '@/modules/auth/hooks/useProfile';
+import { AuthInput } from '@/features/auth/components/AuthInput';
+import { AuthButton } from '@/features/auth/components/AuthButton';
+import { useProfile } from '@/features/auth/hooks/useProfile';
 
 export default function ProfilePage() {
   const {
@@ -25,7 +25,7 @@ export default function ProfilePage() {
   const avatarInitials = profile?.name
     ? profile.name
       .split(' ')
-      .map((n) => n[0])
+      .map((n: any) => n[0])
       .join('')
       .toUpperCase()
       .slice(0, 2)
@@ -121,7 +121,7 @@ export default function ProfilePage() {
                   label="Full name"
                   type="text"
                   value={form.name ?? ''}
-                  onChange={(e) => handleChange('name', e.target.value)}
+                  onChange={(e: any) => handleChange('name', e.target.value)}
                   error={errors.name}
                   icon={<User size={17} />}
                   autoFocus
@@ -131,7 +131,7 @@ export default function ProfilePage() {
                   label="Phone number"
                   type="tel"
                   value={form.phone ?? ''}
-                  onChange={(e) => handleChange('phone', e.target.value)}
+                  onChange={(e: any) => handleChange('phone', e.target.value)}
                   error={errors.phone}
                   icon={<Phone size={17} />}
                   placeholder="+91 98765 43210"

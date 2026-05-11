@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { use, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -73,7 +73,7 @@ export default function MenuManagementPage({ params }: { params: Promise<{ resta
             placeholder="Search items by name, description, or tags..." 
             className="w-full pl-12 pr-4 py-3.5 bg-[var(--surface)] border-2 border-[var(--border)] rounded-2xl outline-none focus:border-[var(--brand)] transition-all font-bold text-sm"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e: any) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="flex gap-2 overflow-x-auto no-scrollbar">
@@ -173,10 +173,10 @@ export default function MenuManagementPage({ params }: { params: Promise<{ resta
 
       {/* Add Modal */}
       <Modal 
-        open={isAddModalOpen} 
+        isOpen={isAddModalOpen} 
         onClose={() => setIsAddModalOpen(false)}
         title="Add New Dish"
-        size="lg"
+        maxWidth="lg"
       >
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4">

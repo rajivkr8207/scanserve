@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -49,7 +49,7 @@ const MOCK_RESTAURANTS = [
 export default function RestaurantsListPage() {
   const [searchTerm, setSearchTerm] = useState('');
 
-  const filtered = MOCK_RESTAURANTS.filter(r => 
+  const filtered = MOCK_RESTAURANTS.filter((r: any) => 
     r.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     r.cuisine.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -75,7 +75,7 @@ export default function RestaurantsListPage() {
             placeholder="Search restaurants by name or cuisine..." 
             className="w-full pl-12 pr-4 py-4 bg-[var(--surface)] border-2 border-[var(--border)] rounded-2xl outline-none focus:border-[var(--brand)] transition-all font-bold text-sm"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e: any) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="card p-4 flex items-center gap-4">

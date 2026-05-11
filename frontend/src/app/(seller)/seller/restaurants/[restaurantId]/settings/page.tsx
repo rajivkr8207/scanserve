@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState, use } from 'react';
 import { 
@@ -10,10 +10,10 @@ import {
   Info,
   AlertCircle
 } from 'lucide-react';
-import { useRestaurants } from '@/modules/restaurant/hooks/useRestaurants';
+import { useRestaurants } from '@/features/restaurant/hooks/useRestaurants';
 import { MenuTemplate } from '@shared/types/restaurant.type';
 import type { IRestaurant } from '@shared/types/restaurant.type';
-import { AuthButton } from '@/modules/auth/components/AuthButton';
+import { AuthButton } from '@/features/auth/components/AuthButton';
 import { cn } from '@/lib/utils';
 
 export default function RestaurantSettingsPage({ params }: { params: Promise<{ restaurantId: string }> }) {
@@ -27,7 +27,7 @@ export default function RestaurantSettingsPage({ params }: { params: Promise<{ r
   const [saveError, setSaveError] = useState<string | null>(null);
 
   // Find the current restaurant from Redux store
-  const restaurant = restaurants.find(r => r._id === restaurantId) || null;
+  const restaurant = restaurants.find((r: any) => r._id === restaurantId) || null;
 
   useEffect(() => {
     const loadData = async () => {

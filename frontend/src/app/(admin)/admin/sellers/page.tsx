@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -63,7 +63,7 @@ export default function AdminSellersPage() {
             placeholder="Search sellers by name, email, or ID..." 
             className="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/5 rounded-2xl outline-none focus:border-[var(--brand)] transition-all font-bold text-sm text-white placeholder:text-white/20"
             value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            onChange={(e: any) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="flex gap-2">
@@ -156,10 +156,10 @@ export default function AdminSellersPage() {
 
       {/* Seller Details Modal */}
       <Modal 
-        open={isModalOpen} 
+        isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)}
         title="Seller Profile"
-        size="lg"
+        maxWidth="lg"
       >
         {selectedSeller && (
           <div className="space-y-8">

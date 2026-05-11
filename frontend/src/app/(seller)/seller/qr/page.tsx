@@ -18,7 +18,7 @@ import {
   Palette
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
-import { Modal } from '@/components/ui/Modal';
+import Modal from '@/components/ui/Modal';
 import { cn } from '@/lib/utils';
 
 const MOCK_QRS = [
@@ -161,7 +161,7 @@ export default function QRManagementPage() {
 
       {/* Preview Modal */}
       <Modal 
-        open={isModalOpen} 
+        isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)}
         title={`QR Preview - ${selectedQR?.table}`}
       >

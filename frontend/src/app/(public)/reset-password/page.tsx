@@ -1,12 +1,12 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { Key, Lock } from 'lucide-react';
-import { AuthLayout } from '@/modules/auth/components/AuthLayout';
-import { AuthCard } from '@/modules/auth/components/AuthCard';
-import { AuthInput } from '@/modules/auth/components/AuthInput';
-import { AuthButton } from '@/modules/auth/components/AuthButton';
-import { useResetPassword } from '@/modules/auth/hooks/useResetPassword';
+import { AuthLayout } from '@/features/auth/components/AuthLayout';
+import { AuthCard } from '@/features/auth/components/AuthCard';
+import { AuthInput } from '@/features/auth/components/AuthInput';
+import { AuthButton } from '@/features/auth/components/AuthButton';
+import { useResetPassword } from '@/features/auth/hooks/useResetPassword';
 
 export default function ResetPasswordPage() {
   const { form, errors, isLoading, success, pendingEmail, handleChange, handleSubmit } =
@@ -46,7 +46,7 @@ export default function ResetPasswordPage() {
             inputMode="numeric"
             placeholder="Enter 6-digit code"
             value={form.otp}
-            onChange={(e) => handleChange('otp', e.target.value.replace(/\D/g, '').slice(0, 6))}
+            onChange={(e: any) => handleChange('otp', e.target.value.replace(/\D/g, '').slice(0, 6))}
             error={errors.otp}
             icon={<Key size={17} />}
             maxLength={6}
@@ -60,7 +60,7 @@ export default function ResetPasswordPage() {
             type="password"
             placeholder="At least 8 characters"
             value={form.newPassword}
-            onChange={(e) => handleChange('newPassword', e.target.value)}
+            onChange={(e: any) => handleChange('newPassword', e.target.value)}
             error={errors.newPassword}
             icon={<Lock size={17} />}
             autoComplete="new-password"
@@ -73,7 +73,7 @@ export default function ResetPasswordPage() {
             type="password"
             placeholder="Repeat your new password"
             value={form.confirmPassword}
-            onChange={(e) => handleChange('confirmPassword', e.target.value)}
+            onChange={(e: any) => handleChange('confirmPassword', e.target.value)}
             error={errors.confirmPassword}
             icon={<Lock size={17} />}
             autoComplete="new-password"

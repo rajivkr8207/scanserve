@@ -1,11 +1,11 @@
-'use client';
+﻿'use client';
 
 import { Suspense } from 'react';
-import { AuthLayout } from '@/modules/auth/components/AuthLayout';
-import { AuthCard } from '@/modules/auth/components/AuthCard';
-import { OtpInput } from '@/modules/auth/components/OtpInput';
-import { AuthButton } from '@/modules/auth/components/AuthButton';
-import { useVerifyOtp } from '@/modules/auth/hooks/useVerifyOtp';
+import { AuthLayout } from '@/features/auth/components/AuthLayout';
+import { AuthCard } from '@/features/auth/components/AuthCard';
+import { OtpInput } from '@/features/auth/components/OtpInput';
+import { AuthButton } from '@/features/auth/components/AuthButton';
+import { useVerifyOtp } from '@/features/auth/hooks/useVerifyOtp';
 
 function VerifyOtpContent() {
   const {

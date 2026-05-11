@@ -8,7 +8,6 @@ import type { DecodedToken } from '../../../../shared/types/user.type.js';
 
 export const registerUser = asyncHandler(async (req: Request, res: Response) => {
   const { fullName, username, email, password, phoneno } = req.body;
-  console.log(req.body)
   const existUser = await AuthService.findByUserNameOrEmail(username, email);
   if (existUser) {
     throw new ApiError(409, 'User already exists');
@@ -31,7 +30,6 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   if (!user) {
     throw new ApiError(404, 'User not found');
   }
-  console.log(user)
   const isEmailVerifiedUser = user.isEmailVerified;
   if (!isEmailVerifiedUser) {
     throw new ApiError(401, 'Email not verified');

@@ -1,12 +1,12 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { Mail } from 'lucide-react';
-import { AuthLayout } from '@/modules/auth/components/AuthLayout';
-import { AuthCard } from '@/modules/auth/components/AuthCard';
-import { AuthInput } from '@/modules/auth/components/AuthInput';
-import { AuthButton } from '@/modules/auth/components/AuthButton';
-import { useForgotPassword } from '@/modules/auth/hooks/useForgotPassword';
+import { AuthLayout } from '@/features/auth/components/AuthLayout';
+import { AuthCard } from '@/features/auth/components/AuthCard';
+import { AuthInput } from '@/features/auth/components/AuthInput';
+import { AuthButton } from '@/features/auth/components/AuthButton';
+import { useForgotPassword } from '@/features/auth/hooks/useForgotPassword';
 
 export default function ForgotPasswordPage() {
   const { email, errors, isLoading, success, handleChange, handleSubmit } = useForgotPassword();
@@ -38,7 +38,7 @@ export default function ForgotPasswordPage() {
             type="email"
             placeholder="you@example.com"
             value={email}
-            onChange={(e) => handleChange(e.target.value)}
+            onChange={(e: any) => handleChange(e.target.value)}
             error={errors.email}
             icon={<Mail size={17} />}
             autoComplete="email"

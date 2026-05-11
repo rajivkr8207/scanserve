@@ -1,35 +1,34 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { cn } from '@/lib/utils';
-
 import { ReduxProvider } from '@/providers/ReduxProvider';
+import { ThemeProvider } from '@/providers/ThemeProvider';
+import { ReactQueryProvider } from '@/providers/ReactQueryProvider';
+import { Toaster } from 'sonner';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 
 export const metadata: Metadata = {
-  title: 'ScanServe | Smart QR Menu for Restaurants',
-  description: 'Professional SaaS solution for restaurant QR menus and order management.',
+  title: 'ScanServe - Premium QR Restaurant Ordering',
+  description: 'A GOD-LEVEL modern SaaS QR restaurant ordering platform.',
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en" className="h-full">
-      <body
-        className={cn(
-          inter.className,
-          'min-h-screen bg-slate-50 text-slate-900 antialiased'
-        )}
-        cz-shortcut-listen="true"
-      >
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} font-sans antialiased bg-[var(--bg)] text-[var(--text-primary)] min-h-screen`}>
         <ReduxProvider>
-          <main className="relative flex min-h-screen flex-col">
-            {children}
-          </main>
+          <ReactQueryProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+              {children}
+              <Toaster position="top-right" richColors theme="system" closeButton />
+            </ThemeProvider>
+          </ReactQueryProvider>
         </ReduxProvider>
       </body>
     </html>

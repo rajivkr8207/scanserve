@@ -1,12 +1,12 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { Mail, Lock, User } from 'lucide-react';
-import { AuthLayout } from '@/modules/auth/components/AuthLayout';
-import { AuthCard } from '@/modules/auth/components/AuthCard';
-import { AuthInput } from '@/modules/auth/components/AuthInput';
-import { AuthButton } from '@/modules/auth/components/AuthButton';
-import { useLogin } from '@/modules/auth/hooks/useLogin';
+import { AuthLayout } from '@/features/auth/components/AuthLayout';
+import { AuthCard } from '@/features/auth/components/AuthCard';
+import { AuthInput } from '@/features/auth/components/AuthInput';
+import { AuthButton } from '@/features/auth/components/AuthButton';
+import { useLogin } from '@/features/auth/hooks/useLogin';
 
 export default function LoginPage() {
   const { form, errors, isLoading, handleChange, handleSubmit } = useLogin();
@@ -30,7 +30,7 @@ export default function LoginPage() {
             type="text"
             placeholder="Enter your username or email"
             value={form.usernameOrEmail}
-            onChange={(e) => handleChange('usernameOrEmail', e.target.value)}
+            onChange={(e: any) => handleChange('usernameOrEmail', e.target.value)}
             error={errors.usernameOrEmail}
             icon={<User size={17} />}
             autoComplete="email"
@@ -43,7 +43,7 @@ export default function LoginPage() {
             type="password"
             placeholder="Enter your password"
             value={form.password}
-            onChange={(e) => handleChange('password', e.target.value)}
+            onChange={(e: any) => handleChange('password', e.target.value)}
             error={errors.password}
             icon={<Lock size={17} />}
             autoComplete="current-password"

@@ -28,6 +28,9 @@ export const patchRestaurantBasic = asyncHandler(async (req: Request, res: Respo
 });
 export const getPublicRestaurantBySlug = asyncHandler(async (req: Request, res: Response) => {
   const { slug } = req.params;
+  if (!slug) {
+    throw new ApiError(400, 'Slug is required');
+  }
   const restaurant = await RestaurantService.getPublicRestaurantBySlug(slug);
   if (!restaurant) {
     throw new ApiError(404, 'Restaurant not found');

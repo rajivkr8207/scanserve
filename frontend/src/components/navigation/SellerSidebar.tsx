@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -50,6 +51,16 @@ export function SellerSidebar() {
   const dispatch = useAppDispatch();
   const user = useAppSelector(s => s.auth.user);
   const sidebarOpen = useAppSelector(s => s.ui.sidebarOpen);
+  const [isLargeScreen, setIsLargeScreen] = React.useState(false);
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+    const checkScreen = () => setIsLargeScreen(window.innerWidth >= 1024);
+    checkScreen();
+    window.addEventListener('resize', checkScreen);
+    return () => window.removeEventListener('resize', checkScreen);
+  }, []);
 
   return (
     <>
@@ -66,9 +77,9 @@ export function SellerSidebar() {
 
       <motion.aside
         initial={false}
-        animate={{ x: sidebarOpen ? 0 : '-100%' }}
+        animate={mounted ? (isLargeScreen ? { x: 0 } : { x: sidebarOpen ? 0 : '-100%' }) : { x: '-100%' }}
         transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-        className="fixed lg:relative lg:translate-x-0 inset-y-0 left-0 z-50 w-64 flex flex-col h-full border-r border-[var(--border)] bg-[var(--surface)] shadow-xl lg:shadow-none"
+        className="fixed lg:static inset-y-0 left-0 z-50 w-64 flex flex-col h-full border-r border-[var(--border)] bg-[var(--surface)] shadow-xl lg:shadow-none"
       >
         {/* Logo */}
         <div className="flex items-center justify-between p-5 border-b border-[var(--border)]">
@@ -111,11 +122,15 @@ export function SellerSidebar() {
         <div className="p-3 border-t border-[var(--border)]">
           <div className="flex items-center gap-3 p-3 rounded-xl bg-[var(--surface-2)] mb-2">
             <div className="w-9 h-9 rounded-full gradient-brand flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-              {user?.name?.[0]?.toUpperCase() ?? 'S'}
+              {mounted && (user?.name?.[0]?.toUpperCase() ?? 'S')}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-[var(--text-primary)] truncate">{user?.name ?? 'Seller'}</p>
-              <p className="text-xs text-[var(--text-muted)] truncate">{user?.email ?? ''}</p>
+              <p className="text-sm font-semibold text-[var(--text-primary)] truncate">
+                {mounted && (user?.name ?? 'Seller')}
+              </p>
+              <p className="text-xs text-[var(--text-muted)] truncate">
+                {mounted && (user?.email ?? '')}
+              </p>
             </div>
           </div>
           <button

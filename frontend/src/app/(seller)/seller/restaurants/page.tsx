@@ -45,9 +45,14 @@ export default function RestaurantsListPage() {
     cuisineTypes: [] as string[]
   });
 
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     fetchRestaurants();
   }, [fetchRestaurants]);
+
+  if (!mounted) return null;
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -46,7 +46,7 @@ export default function GlobalMenuPage() {
 
   const filteredItems = menuItems.filter(item =>
     item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (typeof item.category === 'object' ? item.category?.name : '').toLowerCase().includes(searchTerm.toLowerCase())
+    (typeof item.category === 'object' ? item.category.name : '').toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   if (!mounted) return null;

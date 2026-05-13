@@ -1,9 +1,10 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
-import type { IRestaurant as ISharedRestaurant } from '../../../../shared/types/restaurant.type.js';
+import { MenuTemplate, type IRestaurant as ISharedRestaurant } from '@shared/types/restaurant.type.js';
 
 export interface IRestaurant
-  extends Document, Omit<ISharedRestaurant, '_id' | 'seller' | 'createdAt' | 'updatedAt'> {
+  extends Omit<ISharedRestaurant, '_id' | 'seller' | 'createdAt' | 'updatedAt' | 'menuTemplate'>, Document {
   seller: Types.ObjectId;
+  menuTemplate: MenuTemplate;
 }
 
 const restaurantSchema = new Schema<IRestaurant>(
@@ -55,8 +56,8 @@ const restaurantSchema = new Schema<IRestaurant>(
     },
     menuTemplate: {
       type: String,
-      enum: ['MODERN', 'CLASSIC', 'MINIMAL', 'VIBRANT'],
-      default: 'MODERN',
+      enum: Object.values(MenuTemplate),
+      default: MenuTemplate.MODERN,
     },
     openingHours: [
       {

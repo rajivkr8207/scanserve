@@ -7,7 +7,7 @@ import {
   getPublicRestaurantBySlug,
 } from './restaurant.controller.js';
 import { authenticate, authorize } from '../../middlewares/auth.middleware.js';
-import { UserRole } from '../../../../shared/types/user.type.js';
+import { UserRole } from '@shared/types/user.type.js';
 import { restaurantValidator } from './restaurant.validator.js';
 
 const restaurantRouter = express.Router();

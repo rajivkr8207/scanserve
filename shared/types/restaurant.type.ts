@@ -22,6 +22,7 @@ export interface IRestaurant {
     phone: string;
     email?: string;
   };
+
   logo?: string;
   coverImage?: string;
   cuisineTypes: string[];

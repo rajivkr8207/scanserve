@@ -34,6 +34,6 @@ export const toggleAvailability = asyncHandler(async (req: Request, res: Respons
 
 export const getPublicMenuBySlug = asyncHandler(async (req: Request, res: Response) => {
   const { slug } = req.params;
-  const menu = await MenuService.getPublicMenuBySlug(slug);
+  const menu = await MenuService.getPublicMenuBySlug(slug as string);
   return res.status(200).json(new ApiResponse(200, menu, 'Menu fetched successfully'));
 });

@@ -1,4 +1,4 @@
-import { UserRole } from '../../../../shared/types/user.type.js';
+import { UserRole } from '@shared/types/user.type.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { User } from '../user/user.model.js';
 

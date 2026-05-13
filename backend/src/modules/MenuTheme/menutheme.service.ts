@@ -1,4 +1,4 @@
-import { MenuTheme, type IMenuTheme } from './menutheme.js';
+import { MenuTheme, type IMenuTheme } from './menutheme.model.js';
 import { ApiError } from '../../utils/ApiError.js';
 
 export const MenuThemeService = {

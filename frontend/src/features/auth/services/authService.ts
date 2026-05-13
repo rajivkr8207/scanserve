@@ -16,14 +16,12 @@ export interface AuthResponse {
 
 export const authService = {
   register: async (dto: RegisterDto): Promise<{ message: string }> => {
-    console.log(dto);
     const res = await api.post('/auth/register', dto);
     return res.data;
   },
 
   login: async (dto: LoginDto): Promise<AuthResponse> => {
     const res = await api.post('/auth/login', dto);
-    console.log(res.data);
     return res.data.data;
   },
 

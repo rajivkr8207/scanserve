@@ -38,6 +38,12 @@ export const CategoryService = {
   },
 
   async deleteCategory(categoryId: string, sellerId: string) {
+    const { MenuItem } = await import('../menu/menu.model.js');
+    const itemsCount = await MenuItem.countDocuments({ category: categoryId });
+    if (itemsCount > 0) {
+      throw new ApiError(400, `Cannot delete category: ${itemsCount} items are still assigned to it.`);
+    }
+
     const category = await MenuCategory.findOneAndDelete({ _id: categoryId, seller: sellerId });
     if (!category) {
       throw new ApiError(404, 'Category not found or you are not authorized');

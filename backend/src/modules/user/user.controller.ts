@@ -4,7 +4,7 @@ import { AuthService } from './user.service.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 import { ApiError } from '../../utils/ApiError.js';
 import { generateToken } from '../../utils/generateToken.js';
-import type { DecodedToken } from '../../../../shared/types/user.type.js';
+import type { DecodedToken } from '@shared/types/user.type.js';
 
 export const registerUser = asyncHandler(async (req: Request, res: Response) => {
   const { fullName, username, email, password, phoneno } = req.body;

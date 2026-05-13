@@ -2,7 +2,7 @@ import type { Request, Response } from 'express';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 import { asyncHandler } from '../../utils/asyncHandler.js';
 import { AdminService } from './admin.service.js';
-import { UserRole } from '../../../../shared/types/user.type.js';
+import { UserRole } from '@shared/types/user.type.js';
 
 export const VerifySeller = asyncHandler(async (req: Request, res: Response) => {
   const sellerId = req.params.id as string;

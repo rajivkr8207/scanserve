@@ -1,4 +1,5 @@
 'use client';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { toggleSidebar, setSidebarOpen } from '@/store/slices/uiSlice';
 import { SellerSidebar } from '@/components/navigation/SellerSidebar';
@@ -25,7 +26,12 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
   const dispatch = useAppDispatch();
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const unreadCount = useAppSelector(s => s.ui.unreadCount);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="flex h-screen overflow-hidden bg-[var(--bg)]">
@@ -37,7 +43,7 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
           <div className="flex items-center gap-4">
             <button
               onClick={() => dispatch(toggleSidebar())}
-              className="p-2 rounded-xl hover:bg-[var(--surface-2)] text-[var(--text-secondary)] transition-colors"
+              className="p-2 rounded-xl hover:bg-[var(--surface-2)] text-[var(--text-secondary)] transition-colors lg:hidden"
             >
               <Menu size={20} />
             </button>
@@ -49,9 +55,9 @@ export default function SellerLayout({ children }: { children: React.ReactNode }
           <div className="flex items-center gap-2">
             <button
               onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-              className="p-2 rounded-xl hover:bg-[var(--surface-2)] text-[var(--text-secondary)] transition-colors"
+              className="p-2 rounded-xl hover:bg-[var(--surface-2)] text-[var(--text-secondary)] transition-colors w-9 h-9 flex items-center justify-center"
             >
-              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+              {!mounted ? null : theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
             </button>
             <Link href="/notifications" className="relative p-2 rounded-xl hover:bg-[var(--surface-2)] text-[var(--text-secondary)] transition-colors">
               <Bell size={18} />

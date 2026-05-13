@@ -1,10 +1,10 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
-import type { IMenuItem as ISharedMenuItem } from '../../../../shared/types/menu.type.js';
+import type { IMenuItem as ISharedMenuItem } from '@shared/types/menu.type.js';
 
 export interface IMenuItem
   extends
-    Document,
-    Omit<ISharedMenuItem, '_id' | 'restaurant' | 'category' | 'createdAt' | 'updatedAt'> {
+  Document,
+  Omit<ISharedMenuItem, '_id' | 'restaurant' | 'category' | 'createdAt' | 'updatedAt'> {
   restaurant: Types.ObjectId;
   category: Types.ObjectId;
 }

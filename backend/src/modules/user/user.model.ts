@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
-import { UserRole } from '../../../../shared/types/user.type.js';
+import { UserRole } from "@shared/types/user.type.js";
 
 export interface IUser extends Document {
   fullName: string;
@@ -135,30 +135,6 @@ const userSchema = new Schema<IUser>(
   },
   {
     timestamps: true,
-    toJSON: {
-      virtuals: true,
-      transform: (_, ret) => {
-        ret.id = ret._id;
-        ret.name = ret.fullName;
-        ret.phone = ret.phoneno;
-        delete ret._id;
-        delete ret.__v;
-        delete ret.password;
-        return ret;
-      },
-    },
-    toObject: {
-      virtuals: true,
-      transform: (_, ret) => {
-        ret.id = ret._id;
-        ret.name = ret.fullName;
-        ret.phone = ret.phoneno;
-        delete ret._id;
-        delete ret.__v;
-        delete ret.password;
-        return ret;
-      },
-    },
   },
 );
 

@@ -3,6 +3,7 @@ import authReducer from './slices/authSlice';
 import uiReducer from './slices/uiSlice';
 import cartReducer from './slices/cartSlice';
 import restaurantReducer from './slices/restaurantSlice';
+import menuReducer from './slices/menuSlice';
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
     ui: uiReducer,
     cart: cartReducer,
     restaurant: restaurantReducer,
+    menu: menuReducer,
   },
 });
 

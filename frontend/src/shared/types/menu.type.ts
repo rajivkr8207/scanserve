@@ -1,7 +1,9 @@
+import { IMenuCategory } from './category.type';
+
 export interface IMenuItem {
   _id: string;
   restaurant: string;
-  category: string;
+  category: string | IMenuCategory;
   name: string;
   description?: string;
   price: number;

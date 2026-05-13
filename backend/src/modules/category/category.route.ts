@@ -6,7 +6,7 @@ import {
   deleteCategory,
 } from './category.controller.js';
 import { authenticate, authorize } from '../../middlewares/auth.middleware.js';
-import { UserRole } from '../../../../shared/types/user.type.js';
+import { UserRole } from '@shared/types/user.type.js';
 import { categoryValidator } from './category.validator.js';
 
 const categoryRouter = express.Router();

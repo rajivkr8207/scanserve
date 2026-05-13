@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans antialiased bg-[var(--bg)] text-[var(--text-primary)] min-h-screen`}>
+      <body suppressHydrationWarning className={`${inter.variable} font-sans antialiased bg-[var(--bg)] text-[var(--text-primary)] min-h-screen`}>
         <ReduxProvider>
           <ReactQueryProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>

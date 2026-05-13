@@ -1,10 +1,10 @@
 import mongoose, { Schema, Document, Types } from 'mongoose';
-import type { IMenuCategory as ISharedCategory } from '../../../../shared/types/category.type.js';
+import type { IMenuCategory as ISharedCategory } from '@shared/types/category.type.js';
 
 export interface IMenuCategory
   extends
-    Document,
-    Omit<ISharedCategory, '_id' | 'restaurant' | 'seller' | 'createdAt' | 'updatedAt'> {
+  Document,
+  Omit<ISharedCategory, '_id' | 'restaurant' | 'seller' | 'createdAt' | 'updatedAt'> {
   restaurant: Types.ObjectId;
   seller: Types.ObjectId;
 }

@@ -40,5 +40,22 @@ export const MenuThemeService = {
     const theme = await MenuTheme.findByIdAndDelete(id);
     if (!theme) throw new ApiError(404, 'Theme not found');
     return theme;
+  },
+
+  async getThemeBySeller(sellerId: string) {
+    let theme = await MenuTheme.findOne({ createdBy: sellerId });
+    if (!theme) {
+      // Create a default theme for the seller
+      theme = await MenuTheme.create({
+        name: 'Default Theme',
+        slug: `theme-${sellerId}`,
+        createdBy: sellerId,
+        branding: {
+          restaurantName: 'My Restaurant',
+          tagline: 'Authentic Culinary Experience',
+        }
+      });
+    }
+    return theme;
   }
 };

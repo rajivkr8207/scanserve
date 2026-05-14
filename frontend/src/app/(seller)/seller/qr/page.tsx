@@ -1,34 +1,25 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   QrCode as QrIcon, 
   Download, 
-  Plus, 
-  Trash2, 
   Printer, 
   Copy, 
   Check, 
-  ExternalLink,
   Smartphone,
-  Eye,
-  Info,
-  Hash,
-  Palette,
   Loader2
 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { Modal } from '@/components/ui/Modal';
-import { cn } from '@/lib/utils';
 import { useRestaurants } from '@/features/restaurant/hooks/useRestaurants';
 import Link from 'next/link';
 
 export default function QRManagementPage() {
   const { restaurants, loading, fetchRestaurants } = useRestaurants();
-  const [selectedQR, setSelectedQR] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   const restaurant = restaurants[0]; // Assuming one restaurant for now
@@ -43,17 +34,46 @@ export default function QRManagementPage() {
     return '';
   };
 
-  const copyLink = (id: string, slug: string, tableNum: string) => {
-    const link = `${getOrigin()}/${slug}?table=${tableNum}`;
-    navigator.clipboard.writeText(link);
-    setCopiedId(id);
-    setTimeout(() => setCopiedId(null), 2000);
+  const qrUrl = mounted && restaurant ? `${getOrigin()}/qr/${restaurant.slug}` : '';
+
+  const copyLink = () => {
+    if (!qrUrl) return;
+    navigator.clipboard.writeText(qrUrl);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
-  const MOCK_QRS = [
-    { id: 'qr_1', table: 'Table 01', slug: restaurant?.slug || 'spice-garden', tableNum: 'T-1', scans: 0, lastScan: 'N/A' },
-    { id: 'qr_2', table: 'Table 02', slug: restaurant?.slug || 'spice-garden', tableNum: 'T-2', scans: 0, lastScan: 'N/A' },
-  ];
+  const downloadQR = (qrId: string, filename: string) => {
+    const svg = document.getElementById(qrId);
+    if (!svg) return;
+    
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    const img = new Image();
+    
+    img.onload = () => {
+      canvas.width = img.width + 40;
+      canvas.height = img.height + 80;
+      if (ctx) {
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 20, 20);
+        ctx.fillStyle = "black";
+        ctx.font = "bold 20px Inter, sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(filename, canvas.width / 2, img.height + 50);
+        
+        const pngFile = canvas.toDataURL("image/png");
+        const downloadLink = document.createElement("a");
+        downloadLink.download = `${filename.replace(/\s+/g, '-')}-QR.png`;
+        downloadLink.href = pngFile;
+        downloadLink.click();
+      }
+    };
+    
+    img.src = "data:image/svg+xml;base64," + btoa(svgData);
+  };
 
   if (!mounted) return null;
 
@@ -77,130 +97,114 @@ export default function QRManagementPage() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 max-w-5xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
         <div>
-          <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tight font-[var(--font-outfit)]">Smart QR Codes</h1>
-          <p className="text-[var(--text-secondary)] font-medium">Generate and manage unique QR codes for your tables.</p>
+          <h1 className="text-3xl font-black text-[var(--text-primary)] tracking-tight font-[var(--font-outfit)]">Smart Menu QR</h1>
+          <p className="text-[var(--text-secondary)] font-medium">Your customized restaurant menu QR code.</p>
         </div>
-        <button className="btn btn-primary btn-lg gap-2 shadow-xl shadow-[var(--brand-glow)]">
-          <Plus size={20} /> Generate New QRs
-        </button>
       </div>
 
-      {/* QR Customization Card */}
-      <div className="card p-8 bg-gradient-to-br from-[var(--brand)] to-[var(--brand-dark)] text-white relative overflow-hidden border-none shadow-[var(--shadow-brand)]">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
-        <div className="relative z-10 grid md:grid-cols-3 gap-8 items-center">
-          <div className="md:col-span-2">
-            <h2 className="text-2xl font-black mb-4">Design Your Brand Experience</h2>
-            <p className="text-white/80 mb-8 font-medium max-w-lg leading-relaxed">
-              Custom QR codes with your restaurant logo, colors, and unique styling. Create a premium first impression before the first bite.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <button className="btn bg-white text-[var(--brand)] font-black btn-sm px-6">Customize Styles</button>
-              <button className="btn bg-transparent border-2 border-white/30 text-white font-black btn-sm px-6 hover:bg-white/10">Bulk Print</button>
-            </div>
-          </div>
-          <div className="flex justify-center">
-            <div className="bg-white p-6 rounded-[2.5rem] shadow-2xl relative rotate-3 hover:rotate-0 transition-transform duration-500 cursor-pointer">
-              <div className="absolute inset-0 bg-gradient-to-tr from-[var(--brand)] to-transparent opacity-10 rounded-[2.5rem]" />
+      {/* Main QR Display */}
+      <div className="card p-8 bg-[var(--surface)] relative overflow-hidden border border-[var(--border)] shadow-xl rounded-[2.5rem]">
+        <div className="grid md:grid-cols-2 gap-12 items-center">
+          
+          <div className="flex flex-col items-center justify-center space-y-6">
+            <div 
+              className="bg-white p-6 rounded-[2rem] shadow-2xl relative transition-transform duration-500 cursor-pointer hover:scale-105 border border-[var(--border)]"
+              onClick={() => setIsModalOpen(true)}
+            >
               <QRCodeSVG 
-                value={`${getOrigin()}/${restaurant?.slug}`} 
-                size={140}
+                id="main-qr"
+                value={qrUrl} 
+                size={220}
                 level="H"
-                fgColor="#6c47ff"
+                fgColor="#1a1a1a"
                 includeMargin={false}
               />
-              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-white px-4 py-1.5 rounded-full shadow-lg border border-[var(--border)] whitespace-nowrap">
-                <span className="text-[10px] font-black text-[var(--brand)] uppercase tracking-widest">{restaurant?.name}</span>
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-white px-6 py-2 rounded-full shadow-lg border border-[var(--border)] whitespace-nowrap">
+                <span className="text-xs font-black text-[var(--brand)] uppercase tracking-widest">{restaurant.name}</span>
+              </div>
+            </div>
+
+            <div className="flex gap-4 mt-8 w-full max-w-[280px]">
+              <button 
+                onClick={copyLink}
+                className="flex-1 btn bg-[var(--surface-2)] text-[var(--text-primary)] hover:bg-[var(--brand)] hover:text-white flex flex-col items-center gap-2 py-4 h-auto rounded-2xl transition-all"
+              >
+                {copied ? <Check size={20} className="text-green-500" /> : <Copy size={20} />}
+                <span className="text-[10px] font-black uppercase tracking-widest">Copy Link</span>
+              </button>
+              <button 
+                onClick={() => downloadQR('main-qr', restaurant.name)}
+                className="flex-1 btn bg-[var(--surface-2)] text-[var(--text-primary)] hover:bg-[var(--brand)] hover:text-white flex flex-col items-center gap-2 py-4 h-auto rounded-2xl transition-all"
+              >
+                <Download size={20} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Download</span>
+              </button>
+              <button 
+                onClick={() => setIsModalOpen(true)}
+                className="flex-1 btn bg-[var(--surface-2)] text-[var(--text-primary)] hover:bg-[var(--brand)] hover:text-white flex flex-col items-center gap-2 py-4 h-auto rounded-2xl transition-all"
+              >
+                <Printer size={20} />
+                <span className="text-[10px] font-black uppercase tracking-widest">Print</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="inline-block px-4 py-1.5 bg-[var(--brand-light)] text-[var(--brand)] rounded-full text-xs font-black uppercase tracking-widest mb-2">
+              Ready to Scan
+            </div>
+            <h2 className="text-4xl font-black text-[var(--text-primary)] leading-tight">
+              Your Digital<br />Menu is Live
+            </h2>
+            <p className="text-[var(--text-secondary)] font-medium text-lg leading-relaxed">
+              Customers can scan this QR code to instantly view your full menu. 
+              The menu will automatically reflect your customized colors, fonts, and layout.
+            </p>
+            
+            <div className="bg-[var(--surface-2)] p-4 rounded-2xl flex items-start gap-4 mt-6 border border-[var(--border)]">
+              <div className="bg-white p-2 rounded-xl text-[var(--brand)]">
+                <Smartphone size={24} />
+              </div>
+              <div>
+                <h4 className="font-bold text-sm mb-1 text-[var(--text-primary)]">URL Endpoint</h4>
+                <p className="text-xs text-[var(--text-muted)] font-mono break-all">{qrUrl}</p>
               </div>
             </div>
           </div>
+
         </div>
-      </div>
-
-      {/* QR List Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {MOCK_QRS.map((qr) => (
-          <motion.div
-            key={qr.id}
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="card group hover:border-[var(--brand)] transition-all flex flex-col"
-          >
-            <div className="p-6 flex-1 flex flex-col items-center text-center">
-              <div 
-                className="w-full aspect-square bg-[var(--surface-2)] rounded-3xl flex items-center justify-center mb-6 border border-dashed border-[var(--border)] group-hover:bg-white group-hover:border-solid group-hover:border-[var(--brand-brand)] transition-all cursor-zoom-in"
-                onClick={() => { setSelectedQR(qr); setIsModalOpen(true); }}
-              >
-                <QRCodeSVG 
-                  value={`${getOrigin()}/${qr.slug}?table=${qr.tableNum}`} 
-                  size={140}
-                  level="M"
-                />
-              </div>
-              <h3 className="font-black text-[var(--text-primary)] text-lg tracking-tight mb-1">{qr.table}</h3>
-              <div className="flex items-center gap-2 mb-4">
-                <span className="badge badge-dark text-[10px] font-black tracking-widest">{qr.tableNum}</span>
-                <span className="text-[var(--text-muted)] text-xs font-bold flex items-center gap-1">
-                  <Smartphone size={12} /> {qr.scans} Scans
-                </span>
-              </div>
-            </div>
-
-            <div className="p-4 bg-[var(--surface-2)]/50 border-t border-[var(--border)] grid grid-cols-3 gap-2">
-              <button 
-                onClick={() => copyLink(qr.id, qr.slug, qr.tableNum)}
-                className="p-2 rounded-xl hover:bg-white hover:text-[var(--brand)] transition-all flex flex-col items-center gap-1"
-              >
-                {copiedId === qr.id ? <Check size={18} className="text-green-500" /> : <Copy size={18} />}
-                <span className="text-[8px] font-black uppercase tracking-widest">Link</span>
-              </button>
-              <button className="p-2 rounded-xl hover:bg-white hover:text-[var(--brand)] transition-all flex flex-col items-center gap-1">
-                <Download size={18} />
-                <span className="text-[8px] font-black uppercase tracking-widest">Save</span>
-              </button>
-              <button 
-                onClick={() => { setSelectedQR(qr); setIsModalOpen(true); }}
-                className="p-2 rounded-xl hover:bg-white hover:text-[var(--brand)] transition-all flex flex-col items-center gap-1"
-              >
-                <Printer size={18} />
-                <span className="text-[8px] font-black uppercase tracking-widest">Print</span>
-              </button>
-            </div>
-          </motion.div>
-        ))}
-
-        {/* Add QR Card */}
-        <button className="border-4 border-dashed border-[var(--border)] rounded-3xl py-12 flex flex-col items-center justify-center gap-4 group hover:border-[var(--brand)] hover:bg-[var(--brand-light)] transition-all">
-          <div className="w-12 h-12 rounded-full bg-[var(--surface-2)] flex items-center justify-center text-[var(--text-muted)] group-hover:bg-[var(--brand)] group-hover:text-white transition-all shadow-sm">
-            <Plus size={24} />
-          </div>
-          <span className="text-xs font-black text-[var(--text-muted)] uppercase tracking-widest group-hover:text-[var(--brand)]">Create New QR</span>
-        </button>
       </div>
 
       {/* Preview Modal */}
       <Modal 
         isOpen={isModalOpen} 
         onClose={() => setIsModalOpen(false)}
-        title={`QR Preview - ${selectedQR?.table}`}
+        title={`Print QR Code`}
       >
         <div className="flex flex-col items-center py-6">
           <div className="bg-white p-8 rounded-[3rem] shadow-2xl border-2 border-[var(--border)] mb-8">
             <QRCodeSVG 
-              value={`${getOrigin()}/${selectedQR?.slug}?table=${selectedQR?.tableNum}`} 
+              id="preview-qr"
+              value={qrUrl} 
               size={240}
               level="H"
-              fgColor="var(--text-primary)"
+              fgColor="#1a1a1a"
             />
           </div>
           <div className="grid grid-cols-2 gap-4 w-full">
-            <button className="btn btn-primary gap-2">
+            <button 
+              onClick={() => downloadQR('preview-qr', restaurant.name)}
+              className="btn btn-primary gap-2"
+            >
               <Download size={18} /> Download PNG
             </button>
-            <button className="btn btn-ghost gap-2">
+            <button 
+              onClick={() => window.print()}
+              className="btn btn-ghost gap-2"
+            >
               <Printer size={18} /> Print Label
             </button>
           </div>

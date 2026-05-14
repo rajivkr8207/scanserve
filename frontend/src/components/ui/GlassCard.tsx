@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 export interface GlassCardProps extends Omit<HTMLMotionProps<'div'>, 'children'> {
   hoverEffect?: boolean;
-  intensity?: 'light' | 'medium' | 'heavy';
+  intensity?: 'light' | 'medium' | 'heavy' | 'none';
   children?: React.ReactNode;
 }
 
@@ -14,6 +14,7 @@ export const GlassCard = React.forwardRef<HTMLDivElement, GlassCardProps>(
   ({ className, hoverEffect = false, intensity = 'medium', children, ...props }, ref) => {
     
     const intensityStyles = {
+      none: '',
       light: 'bg-[var(--surface-glass)] backdrop-blur-sm border-[var(--border)]',
       medium: 'bg-[var(--surface-glass)] backdrop-blur-md border-[var(--border)]',
       heavy: 'bg-[var(--surface-glass)] backdrop-blur-xl border-[rgba(255,255,255,0.15)] dark:border-[rgba(255,255,255,0.05)] shadow-xl',

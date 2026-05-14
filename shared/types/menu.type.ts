@@ -1,7 +1,9 @@
+import type { IMenuCategory } from './category.type.js';
+
 export interface IMenuItem {
   _id: string;
   restaurant: string;
-  category: string;
+  category: string | IMenuCategory;
   name: string;
   description?: string;
   price: number;
@@ -9,6 +11,7 @@ export interface IMenuItem {
   image?: string;
   isVeg: boolean;
   isAvailable: boolean;
+  isBestseller?: boolean;
   preparationTime: number;
   tags: string[];
   createdAt: Date;

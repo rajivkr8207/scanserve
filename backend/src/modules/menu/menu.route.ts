@@ -6,6 +6,7 @@ import {
   deleteMenuItem,
   toggleAvailability,
   getPublicMenuBySlug,
+  getPublicMenuByRestaurantId,
 } from './menu.controller.js';
 import { authenticate, authorize } from '../../middlewares/auth.middleware.js';
 import { UserRole } from '@shared/types/user.type.js';
@@ -15,6 +16,7 @@ const menuRouter = express.Router();
 
 // Public routes
 menuRouter.get('/public/:slug', getPublicMenuBySlug);
+menuRouter.get('/public/id/:id', getPublicMenuByRestaurantId);
 
 // Protected routes for SELLER
 menuRouter.use(authenticate, authorize(UserRole.SELLER));

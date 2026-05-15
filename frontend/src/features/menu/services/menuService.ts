@@ -9,8 +9,18 @@ export const menuService = {
     return response.data.data;
   },
 
+  getMenuById: async (id: string): Promise<IMenuItem[]> => {
+    const response = await api.get(`/menu/public/id/${id}`);
+    return response.data.data;
+  },
+
   getRestaurantInfo: async (slug: string) => {
     const response = await api.get(`/restaurant/public/${slug}`);
+    return response.data.data;
+  },
+
+  getRestaurantInfoById: async (id: string) => {
+    const response = await api.get(`/restaurant/public/id/${id}`);
     return response.data.data;
   },
 

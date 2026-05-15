@@ -11,6 +11,7 @@ export interface IMenuItem {
   image?: string;
   isVeg: boolean;
   isAvailable: boolean;
+  isBestseller?: boolean;
   preparationTime: number;
   tags: string[];
   createdAt: Date;

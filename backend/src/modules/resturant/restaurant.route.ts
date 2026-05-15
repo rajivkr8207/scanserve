@@ -5,6 +5,7 @@ import {
   updateRestaurant,
   patchRestaurantBasic,
   getPublicRestaurantBySlug,
+  getPublicRestaurantById,
 } from './restaurant.controller.js';
 import { authenticate, authorize } from '../../middlewares/auth.middleware.js';
 import { UserRole } from '@shared/types/user.type.js';
@@ -14,6 +15,7 @@ const restaurantRouter = express.Router();
 
 // Public routes
 restaurantRouter.get('/public/:slug', getPublicRestaurantBySlug);
+restaurantRouter.get('/public/id/:id', getPublicRestaurantById);
 
 // All routes here require authentication and SELLER role
 restaurantRouter.use(authenticate, authorize(UserRole.SELLER));

@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    restart: always
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb+srv://cohort:asdfghjkl@cluster0.gkk6t0u.mongodb.net/scanserve
+      - JWT_SECRET=69d06a6223ff8f51966fc09b64e8ac46
+      - CORS_ORIGIN=http://localhost:3000
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    restart: always
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:5000
+    ports:
+      - "3000:3000"   
+

@@ -35,6 +35,22 @@ export const menuThemeService = {
   },
 
   /**
+   * Get theme by restaurant ID (public access)
+   */
+  getThemeByRestaurantId: async (restaurantId: string): Promise<IMenuTheme> => {
+    const response = await api.get(`/themes/restaurant/${restaurantId}`);
+    return response.data.data;
+  },
+
+  /**
+   * Get theme by restaurant slug (public access)
+   */
+  getThemeByRestaurantSlug: async (slug: string): Promise<IMenuTheme> => {
+    const response = await api.get(`/themes/restaurant/slug/${slug}`);
+    return response.data.data;
+  },
+
+  /**
    * Create a new theme
    */
   createTheme: async (data: Partial<IMenuTheme>): Promise<IMenuTheme> => {

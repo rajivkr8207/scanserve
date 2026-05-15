@@ -17,7 +17,8 @@ import {
   ChevronRight,
   Smartphone,
   Search,
-  ShoppingCart
+  ShoppingCart,
+  Plus
 } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useMenuTheme } from '@/features/restaurant/hooks/useMenuTheme';
@@ -402,53 +403,88 @@ export default function ThemeCustomizerPage() {
               )}
 
               {/* Menu Items */}
-              <div className="p-4 space-y-4">
-                {[1, 2].map((i) => (
-                  <div
-                    key={i}
-                    className={cn(
-                      "bg-[var(--surface)] p-4 rounded-3xl border border-[var(--border)] flex gap-4 shadow-sm",
-                      theme.layout.templateStyle === 'list' && "p-2 rounded-xl",
-                      theme.layout.itemCardStyle === 'glass' && "bg-white/40 backdrop-blur-md"
-                    )}
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        {theme.visibility.showVegBadge && (
-                          <div className={cn("w-3 h-3 rounded-sm border flex items-center justify-center", i === 1 ? "border-green-600" : "border-red-600")}>
-                            <div className={cn("w-1.5 h-1.5 rounded-full", i === 1 ? "bg-green-600" : "bg-red-600")} />
-                          </div>
-                        )}
-                        <span className="text-[9px] font-black uppercase tracking-widest text-[var(--brand)]">Bestseller</span>
-                      </div>
-                      <h4 className="font-black text-sm text-[var(--text-primary)]">
-                        {i === 1 ? "Butter Chicken" : "Garlic Naan"}
-                      </h4>
-                      {theme.visibility.showPrice && (
-                        <p className="text-xs font-black mt-1" style={{ color: theme.colors.primary }}>₹{i === 1 ? "350" : "60"}</p>
-                      )}
-                      <p className="text-[10px] text-[var(--text-muted)] mt-2 font-medium line-clamp-2 leading-relaxed">
-                        Authentic recipe with secret spices and fresh ingredients.
-                      </p>
-                    </div>
-
-                    <div className="relative w-20 h-20 rounded-2xl bg-[var(--surface-2)] overflow-hidden shrink-0 shadow-sm border border-[var(--border)]">
-                      <img
-                        src={i === 1 ? "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&q=80&w=200" : "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&q=80&w=200"}
-                        className="w-full h-full object-cover"
-                        alt="Item"
-                      />
-                      {theme.visibility.showAddToCart && (
-                        <div
-                          className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-white px-3 py-1 rounded-full shadow-lg border border-[var(--border)] text-[9px] font-black flex items-center gap-1 active:scale-90 transition-transform"
-                          style={{ color: theme.colors.primary }}
-                        >
-                          ADD <ChevronRight size={10} />
+              <div className={cn(
+                "p-4 gap-4",
+                theme.layout.templateStyle === 'grid' ? "grid grid-cols-2" : "flex flex-col"
+              )}>
+                {[1, 2].map((i) => {
+                  const style = theme.layout.templateStyle;
+                  
+                  if (style === 'grid') {
+                    return (
+                      <div key={i} className="bg-[var(--surface)] rounded-2xl overflow-hidden border border-[var(--border)] flex flex-col shadow-sm">
+                        <div className="aspect-square bg-[var(--surface-2)]">
+                           <img
+                            src={i === 1 ? "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&q=80&w=200" : "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&q=80&w=200"}
+                            className="w-full h-full object-cover"
+                            alt="Item"
+                          />
                         </div>
-                      )}
+                        <div className="p-2 flex flex-col flex-1">
+                          <h4 className="font-bold text-[10px] line-clamp-1">{i === 1 ? "Butter Chicken" : "Garlic Naan"}</h4>
+                          <p className="text-[10px] font-black mt-1" style={{ color: theme.colors.primary }}>₹{i === 1 ? "350" : "60"}</p>
+                          <div className="mt-auto pt-2 flex justify-end">
+                             <div className="bg-[var(--brand)] text-white p-1 rounded-lg" style={{ backgroundColor: theme.colors.primary }}>
+                               <Plus size={12} />
+                             </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  if (style === 'list') {
+                    return (
+                      <div key={i} className="flex items-center justify-between py-2 border-b border-[var(--border)]">
+                        <div className="flex flex-col">
+                          <h4 className="font-bold text-xs">{i === 1 ? "Butter Chicken" : "Garlic Naan"}</h4>
+                          <p className="text-[10px] text-[var(--text-muted)]">Authentic recipe...</p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="font-bold text-xs">₹{i === 1 ? "350" : "60"}</span>
+                          <div className="w-6 h-6 rounded-full border border-[var(--brand)] flex items-center justify-center text-[var(--brand)]" style={{ borderColor: theme.colors.primary, color: theme.colors.primary }}>
+                            <Plus size={12} />
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
+                  // Default Horizontal Card
+                  return (
+                    <div
+                      key={i}
+                      className="bg-[var(--surface)] p-3 rounded-2xl border border-[var(--border)] flex gap-3 shadow-sm"
+                    >
+                      <div className="w-16 h-16 rounded-xl bg-[var(--surface-2)] overflow-hidden shrink-0">
+                        <img
+                          src={i === 1 ? "https://images.unsplash.com/photo-1588166524941-3bf61a9c41db?auto=format&fit=crop&q=80&w=200" : "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?auto=format&fit=crop&q=80&w=200"}
+                          className="w-full h-full object-cover"
+                          alt="Item"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-bold text-xs text-[var(--text-primary)]">
+                          {i === 1 ? "Butter Chicken" : "Garlic Naan"}
+                        </h4>
+                        <p className="text-[10px] text-[var(--text-muted)] line-clamp-1 mt-1">
+                          Authentic recipe with secret spices.
+                        </p>
+                        <div className="flex justify-between items-center mt-2">
+                          <p className="text-xs font-black" style={{ color: theme.colors.primary }}>₹{i === 1 ? "350" : "60"}</p>
+                          {theme.visibility.showAddToCart && (
+                            <div
+                              className="bg-[var(--brand)] text-white px-2 py-0.5 rounded-lg text-[9px] font-bold flex items-center gap-1"
+                              style={{ backgroundColor: theme.colors.primary }}
+                            >
+                              ADD <Plus size={10} />
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
 

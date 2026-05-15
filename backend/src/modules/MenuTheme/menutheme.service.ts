@@ -57,5 +57,29 @@ export const MenuThemeService = {
       });
     }
     return theme;
+  },
+
+  async getThemeByRestaurantId(restaurantId: string) {
+    if (!restaurantId || restaurantId === 'undefined') {
+      throw new ApiError(400, 'Valid Restaurant ID is required');
+    }
+    
+    const { Restaurant } = await import('../resturant/restaurant.model.js');
+    const restaurant = await Restaurant.findById(restaurantId);
+    if (!restaurant) throw new ApiError(404, 'Restaurant not found');
+    
+    return await MenuThemeService.getThemeBySeller(restaurant.seller.toString());
+  },
+
+  async getThemeByRestaurantSlug(slug: string) {
+    if (!slug || slug === 'undefined') {
+      throw new ApiError(400, 'Valid Restaurant slug is required');
+    }
+
+    const { Restaurant } = await import('../resturant/restaurant.model.js');
+    const restaurant = await Restaurant.findOne({ slug });
+    if (!restaurant) throw new ApiError(404, 'Restaurant not found');
+    
+    return await MenuThemeService.getThemeBySeller(restaurant.seller.toString());
   }
 };

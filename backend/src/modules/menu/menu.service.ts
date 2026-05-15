@@ -82,4 +82,10 @@ export const MenuService = {
       'category',
     );
   },
+
+  async getPublicMenuByRestaurantId(restaurantId: string) {
+    return await MenuItem.find({ restaurant: restaurantId, isAvailable: true }).populate(
+      'category',
+    );
+  },
 };

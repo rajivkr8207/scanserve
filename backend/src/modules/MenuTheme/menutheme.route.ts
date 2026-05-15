@@ -9,6 +9,8 @@ const themeRouter = express.Router();
 // Public routes
 themeRouter.get('/', MenuThemeController.getAllThemes);
 themeRouter.get('/slug/:slug', menuThemeValidator.getBySlug, MenuThemeController.getThemeBySlug);
+themeRouter.get('/restaurant/:id', MenuThemeController.getThemeByRestaurantId);
+themeRouter.get('/restaurant/slug/:slug', MenuThemeController.getThemeByRestaurantSlug);
 
 // Protected routes (Admin or Seller)
 themeRouter.get('/mine', authenticate, isAdminOrSeller, MenuThemeController.getMyTheme);

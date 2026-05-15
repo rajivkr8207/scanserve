@@ -37,3 +37,16 @@ export const getPublicRestaurantBySlug = asyncHandler(async (req: Request, res: 
   }
   return res.status(200).json(new ApiResponse(200, restaurant, 'Restaurant fetched successfully'));
 });
+
+export const getPublicRestaurantById = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  if (!id) {
+    throw new ApiError(400, 'ID is required');
+  }
+  const restaurant = await RestaurantService.getPublicRestaurantById(id as string);
+  if (!restaurant) {
+    throw new ApiError(404, 'Restaurant not found');
+  }
+  return res.status(200).json(new ApiResponse(200, restaurant, 'Restaurant fetched successfully'));
+});
+

@@ -47,5 +47,17 @@ export const MenuThemeController = {
     const sellerId = (req as any).user?.id;
     const theme = await MenuThemeService.getThemeBySeller(sellerId);
     res.status(200).json(new ApiResponse(200, theme, 'My theme fetched successfully'));
+  }),
+
+  getThemeByRestaurantId: asyncHandler(async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const theme = await MenuThemeService.getThemeByRestaurantId(id as string);
+    res.status(200).json(new ApiResponse(200, theme, 'Theme fetched successfully'));
+  }),
+
+  getThemeByRestaurantSlug: asyncHandler(async (req: Request, res: Response) => {
+    const { slug } = req.params;
+    const theme = await MenuThemeService.getThemeByRestaurantSlug(slug as string);
+    res.status(200).json(new ApiResponse(200, theme, 'Theme fetched successfully'));
   })
 };

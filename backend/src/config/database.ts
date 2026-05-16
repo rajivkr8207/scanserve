@@ -1,14 +1,15 @@
 import mongoose from 'mongoose';
 import { ENV } from './env.js';
+import logger from './logger.js';
 
 export const ConnectDB = () => {
   mongoose
     .connect(ENV.MONGODB_URI)
     .then(() => {
-      console.log(`Mongo DB connected Successfully`);
+      logger.info(`Mongo DB connected Successfully`);
     })
     .catch((err) => {
-      console.log('Mongo db error', err);
+      logger.error('Mongo db connection failed', err);
       process.exit(1);
     });
 };

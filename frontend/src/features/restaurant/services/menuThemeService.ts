@@ -1,4 +1,4 @@
-import api from '@/lib/axios';
+import api from '@/lib/api/axios';
 import type { IMenuTheme } from '@shared/types/menu-theme.type';
 
 export const menuThemeService = {

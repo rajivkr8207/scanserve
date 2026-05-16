@@ -1,4 +1,4 @@
-import api from '@/lib/axios';
+import api from '@/lib/api/axios';
 import type { IRestaurant } from '@shared/types/restaurant.type';
 
 export const restaurantService = {

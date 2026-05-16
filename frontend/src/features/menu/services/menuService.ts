@@ -1,4 +1,4 @@
-import api from '@/lib/axios';
+import api from '@/lib/api/axios';
 import type { IMenuItem } from '@shared/types/menu.type';
 import type { IMenuCategory } from '@shared/types/category.type';
 

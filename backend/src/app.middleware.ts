@@ -5,6 +5,7 @@ import morgan from 'morgan';
 import compression from 'compression';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
+import { loggingMiddleware } from './middlewares/logger.middleware.js';
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -27,6 +28,7 @@ const blockUnwantedRequests = (
 };
 
 export const appMiddleware = (app: express.Application) => {
+  app.use(loggingMiddleware);
   app.use(helmet());
   app.use(limiter);
   app.use(blockUnwantedRequests);

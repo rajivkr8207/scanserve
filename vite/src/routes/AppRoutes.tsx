@@ -18,6 +18,8 @@ import MyRestaurant from "../features/restaurant/pages/MyRestaurant";
 import CreateRestaurant from "../features/restaurant/pages/CreateRestaurant";
 import ManageCategory from "../features/restaurant/pages/ManageCategory";
 import ManageMenu from "../features/restaurant/pages/ManageMenu";
+import ManageQR from "../features/restaurant/pages/ManageQR";
+import PublicMenu from "../features/menu/pages/PublicMenu";
 
 const AppRoutes = () => {
   console.log("appRoutes");
@@ -70,9 +72,16 @@ const AppRoutes = () => {
             { path: "restaurant/create", element: <CreateRestaurant /> },
             { path: "restaurant/categories", element: <ManageCategory /> },
             { path: "restaurant/menus", element: <ManageMenu /> },
+            { path: "restaurant/qr", element: <ManageQR /> },
           ],
         },
       ],
+    },
+
+    // Public route — no auth needed
+    {
+      path: "/menu/:slug",
+      element: <PublicMenu />,
     },
 
     {

@@ -1,4 +1,11 @@
 import { api } from "../../../lib/api"
+import axios from "axios"
+import { Env } from "../../../config/Config"
+
+// Public API instance without auth interceptors
+const publicApi = axios.create({
+    baseURL: `${Env.Backend_URL}/api/v1`,
+})
 
 export const createMenuItem = async (data: any) => {
     const res = await api.post("/menu", data)
@@ -25,10 +32,23 @@ export const toggleAvailability = async (id: string, isAvailable: boolean) => {
     return res.data
 }
 
+// Public endpoints – no auth required
+export const getPublicMenuBySlug = async (slug: string) => {
+    const res = await publicApi.get(`/menu/public/${slug}`)
+    return res.data
+}
+
+export const getPublicRestaurantBySlug = async (slug: string) => {
+    const res = await publicApi.get(`/restaurant/public/${slug}`)
+    return res.data
+}
+
 export const MenuServices = {
     createMenuItem,
     getMenuItems,
     updateMenuItem,
     deleteMenuItem,
-    toggleAvailability
+    toggleAvailability,
+    getPublicMenuBySlug,
+    getPublicRestaurantBySlug,
 }

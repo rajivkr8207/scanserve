@@ -7,7 +7,7 @@ export default function MyRestaurant() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchMyRestaurant().catch(() => {});
+        fetchMyRestaurant().catch(() => { });
     }, []);
 
     if (isLoading) {
@@ -76,7 +76,7 @@ export default function MyRestaurant() {
             {/* Management Shortcuts */}
             <div>
                 <h2 className="text-xl font-bold text-slate-800 mb-4">Manage</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <Link to="/home/restaurant/categories" className="group bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:border-indigo-300 hover:shadow-md transition-all">
                         <div className="flex items-center space-x-4">
                             <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-2xl">🗂️</div>
@@ -96,14 +96,42 @@ export default function MyRestaurant() {
                             </div>
                         </div>
                     </Link>
+
+                    <Link to="/home/restaurant/qr" className="group bg-white p-6 rounded-xl shadow-sm border border-slate-100 hover:border-purple-300 hover:shadow-md transition-all">
+                        <div className="flex items-center space-x-4">
+                            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-2xl">📱</div>
+                            <div>
+                                <h3 className="font-semibold text-slate-800 group-hover:text-purple-600 transition-colors">QR Code</h3>
+                                <p className="text-slate-500 text-sm">Generate & share your menu QR</p>
+                            </div>
+                        </div>
+                    </Link>
                 </div>
             </div>
 
             {/* Restaurant Slug */}
             {restaurant.slug && (
-                <div className="bg-slate-800 text-white p-4 rounded-xl flex items-center justify-between">
-                    <span className="text-slate-300 text-sm">Public Menu URL:</span>
-                    <code className="text-indigo-300 text-sm">/menu/{restaurant.slug}</code>
+                <div className="bg-slate-800 text-white p-5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <p className="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-1">Public Menu URL</p>
+                        <code className="text-indigo-300 text-sm break-all">{window.location.origin}/menu/{restaurant.slug}</code>
+                    </div>
+                    <div className="flex gap-2 flex-shrink-0">
+                        <a
+                            href={`/menu/${restaurant.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
+                        >
+                            View Menu ↗
+                        </a>
+                        <Link
+                            to="/home/restaurant/qr"
+                            className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors"
+                        >
+                            📱 QR Code
+                        </Link>
+                    </div>
                 </div>
             )}
         </div>

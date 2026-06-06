@@ -4,7 +4,6 @@ import UseAuth from "../features/auth/hooks/UseAuth";
 const navLinks = [
     { to: "/home", label: "Home", icon: "🏠", end: true },
     { to: "/home/restaurant", label: "Restaurant", icon: "🍴", end: false },
-    { to: "/home/qr", label: "QR Codes", icon: "📷", end: false },
     { to: "/profile", label: "Profile", icon: "👤", end: false },
 ];
 
@@ -43,10 +42,9 @@ const MainLayout = () => {
                             to={link.to}
                             end={link.end}
                             className={({ isActive }) =>
-                                `flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium text-sm ${
-                                    isActive
-                                        ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/50"
-                                        : "text-indigo-300 hover:bg-indigo-800/50 hover:text-white"
+                                `flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium text-sm ${isActive
+                                    ? "bg-indigo-600 text-white shadow-lg shadow-indigo-900/50"
+                                    : "text-indigo-300 hover:bg-indigo-800/50 hover:text-white"
                                 }`
                             }
                         >
@@ -78,4 +76,4 @@ const MainLayout = () => {
     );
 };
 
-export default MainLayout;
+export default MainLayout;

@@ -1,5 +1,8 @@
+import type { DecodedToken } from '@shared/types/user.type.js';
+import { ENV } from '../../config/env.js';
 import { User } from './user.model.js';
-
+import jwt from 'jsonwebtoken'
+import { GenrateAccessToken } from '../../utils/generateToken.js';
 export const AuthService = {
   async findUserForLogin(usernameOrEmail: string) {
     const user = await User.findOne({
@@ -14,6 +17,17 @@ export const AuthService = {
       $or: [{ username }, { email }],
     });
     return user;
+  },
+  GenAccessToken(token: string) {
+    const decodeToken = jwt.verify(token, ENV.JWT_SECRET as string) as DecodedToken
+    const payload: DecodedToken = {
+      id: decodeToken.id,
+      role: decodeToken.role,
+      username: decodeToken.username,
+    }
+    const accessToken = GenrateAccessToken(payload);
+
+    return accessToken;
   },
   async findByEmail(email: string) {
     const user = await User.findOne({ email })

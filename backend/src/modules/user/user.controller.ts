@@ -3,8 +3,9 @@ import { asyncHandler } from '../../utils/asyncHandler.js';
 import { AuthService } from './user.service.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 import { ApiError } from '../../utils/ApiError.js';
-import { generateToken } from '../../utils/generateToken.js';
+import { generateTokenSetToken } from '../../utils/generateToken.js';
 import type { DecodedToken } from '@shared/types/user.type.js';
+import { ENV } from '../../config/env.js';
 
 export const registerUser = asyncHandler(async (req: Request, res: Response) => {
   const { fullName, username, email, password, phoneno } = req.body;
@@ -47,18 +48,27 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     role: user.role,
     username: user.username,
   };
-  const token = generateToken(payload);
-  res.cookie('token', token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'strict',
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-  });
-  return res.status(200).json(new ApiResponse(200, { user, token }, 'User logged in successfully'));
+  generateTokenSetToken(payload, res);
+  return res.status(200).json(new ApiResponse(200, { user }, 'User logged in successfully'));
 });
 
+export const genrateNewAccessToken = asyncHandler(async (req: Request, res: Response) => {
+  const token = req.cookies.scanserve_refresh;
+  if (!token) {
+    throw new ApiError(401, 'Please login');
+  }
+  const accessToken = await AuthService.GenAccessToken(token)
+  res.cookie("scanserve_access", accessToken, {
+    httpOnly: true,
+    secure: ENV.NODE_ENV === 'production',
+    sameSite: "strict",
+    maxAge: 1000 * 60 * 60 * 24 * 7,
+  })
+  return res.status(200).json(new ApiResponse(200, {}, 'New Access token generated successfully'));
+})
 export const Logout = asyncHandler(async (req: Request, res: Response) => {
-  res.clearCookie('token');
+  res.clearCookie('scanserve_access');
+  res.clearCookie('scanserve_refresh');
   return res.status(200).json(new ApiResponse(200, {}, 'User logged out successfully'));
 });
 
@@ -77,7 +87,6 @@ export const verifyUser = asyncHandler(async (req: Request, res: Response) => {
   const email = req.params.email as string;
   const { otp } = req.body;
   const user = await AuthService.findByEmail(email);
-  console.log(user)
   if (!user) {
     throw new ApiError(404, 'User not found');
   }
@@ -90,7 +99,7 @@ export const verifyUser = asyncHandler(async (req: Request, res: Response) => {
   user.otp = undefined;
   user.otpExpire = undefined;
   user.isEmailVerified = true;
-  user.isVerified = true; // Automatically verify for now to allow login
+  user.isVerified = true;
   await user.save();
 
   const payload: DecodedToken = {
@@ -98,15 +107,8 @@ export const verifyUser = asyncHandler(async (req: Request, res: Response) => {
     role: user.role,
     username: user.username,
   };
-  const token = generateToken(payload);
-  res.cookie('token', token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'strict',
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-  });
-
-  return res.status(200).json(new ApiResponse(200, { user, token }, 'User verified successfully'));
+  generateTokenSetToken(payload, res);
+  return res.status(200).json(new ApiResponse(200, { user }, 'User verified successfully'));
 });
 
 export const forgotPassword = asyncHandler(async (req: Request, res: Response) => {

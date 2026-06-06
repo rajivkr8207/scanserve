@@ -20,7 +20,7 @@ export function proxy(request: NextRequest) {
   }
 
   // 2. Auth-only → redirect to dashboard if already logged in
-  const isAuthOnlyPath = authOnlyPaths.some((path) => 
+  const isAuthOnlyPath = authOnlyPaths.some((path) =>
     path === '/' ? pathname === '/' : pathname.startsWith(path)
   );
   if (isAuthOnlyPath && token) {

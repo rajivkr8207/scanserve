@@ -21,7 +21,7 @@ declare global {
 
 export const authenticate = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.token || req.headers.authorization?.split(' ')[1];
+    const token = req.cookies.scanserve_access || req.headers.authorization?.split(' ')[1];
 
     if (!token) {
       throw new ApiError(401, 'Authentication required');
@@ -29,7 +29,7 @@ export const authenticate = asyncHandler(
 
     try {
       const decoded = jsonwebtoken.verify(token, ENV.JWT_SECRET as string) as JwtPayload;
-      const user = await User.findById(decoded.id).select('-password');
+      const user = await User.findById(decoded.id);
 
       if (!user) {
         throw new ApiError(401, 'User not found or session expired');

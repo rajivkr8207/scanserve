@@ -2,12 +2,12 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  QrCode as QrIcon, 
-  Download, 
-  Printer, 
-  Copy, 
-  Check, 
+import {
+  QrCode as QrIcon,
+  Download,
+  Printer,
+  Copy,
+  Check,
   Smartphone,
   Loader2
 } from 'lucide-react';
@@ -34,7 +34,7 @@ export default function QRManagementPage() {
     return '';
   };
 
-  const qrUrl = mounted && restaurant ? `${getOrigin()}/qr/${restaurant.slug}` : '';
+  const qrUrl = mounted && restaurant ? `${getOrigin()}/menu/${restaurant.slug}` : '';
 
   const copyLink = () => {
     if (!qrUrl) return;
@@ -46,12 +46,12 @@ export default function QRManagementPage() {
   const downloadQR = (qrId: string, filename: string) => {
     const svg = document.getElementById(qrId);
     if (!svg) return;
-    
+
     const svgData = new XMLSerializer().serializeToString(svg);
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
     const img = new Image();
-    
+
     img.onload = () => {
       canvas.width = img.width + 40;
       canvas.height = img.height + 80;
@@ -63,7 +63,7 @@ export default function QRManagementPage() {
         ctx.font = "bold 20px Inter, sans-serif";
         ctx.textAlign = "center";
         ctx.fillText(filename, canvas.width / 2, img.height + 50);
-        
+
         const pngFile = canvas.toDataURL("image/png");
         const downloadLink = document.createElement("a");
         downloadLink.download = `${filename.replace(/\s+/g, '-')}-QR.png`;
@@ -71,7 +71,7 @@ export default function QRManagementPage() {
         downloadLink.click();
       }
     };
-    
+
     img.src = "data:image/svg+xml;base64," + btoa(svgData);
   };
 
@@ -108,15 +108,15 @@ export default function QRManagementPage() {
       {/* Main QR Display */}
       <div className="card p-8 bg-[var(--surface)] relative overflow-hidden border border-[var(--border)] shadow-xl rounded-[2.5rem]">
         <div className="grid md:grid-cols-2 gap-12 items-center">
-          
+
           <div className="flex flex-col items-center justify-center space-y-6">
-            <div 
+            <div
               className="bg-white p-6 rounded-[2rem] shadow-2xl relative transition-transform duration-500 cursor-pointer hover:scale-105 border border-[var(--border)]"
               onClick={() => setIsModalOpen(true)}
             >
-              <QRCodeSVG 
+              <QRCodeSVG
                 id="main-qr"
-                value={qrUrl} 
+                value={qrUrl}
                 size={220}
                 level="H"
                 fgColor="#1a1a1a"
@@ -128,21 +128,21 @@ export default function QRManagementPage() {
             </div>
 
             <div className="flex gap-4 mt-8 w-full max-w-[280px]">
-              <button 
+              <button
                 onClick={copyLink}
                 className="flex-1 btn bg-[var(--surface-2)] text-[var(--text-primary)] hover:bg-[var(--brand)] hover:text-white flex flex-col items-center gap-2 py-4 h-auto rounded-2xl transition-all"
               >
                 {copied ? <Check size={20} className="text-green-500" /> : <Copy size={20} />}
                 <span className="text-[10px] font-black uppercase tracking-widest">Copy Link</span>
               </button>
-              <button 
+              <button
                 onClick={() => downloadQR('main-qr', restaurant.name)}
                 className="flex-1 btn bg-[var(--surface-2)] text-[var(--text-primary)] hover:bg-[var(--brand)] hover:text-white flex flex-col items-center gap-2 py-4 h-auto rounded-2xl transition-all"
               >
                 <Download size={20} />
                 <span className="text-[10px] font-black uppercase tracking-widest">Download</span>
               </button>
-              <button 
+              <button
                 onClick={() => setIsModalOpen(true)}
                 className="flex-1 btn bg-[var(--surface-2)] text-[var(--text-primary)] hover:bg-[var(--brand)] hover:text-white flex flex-col items-center gap-2 py-4 h-auto rounded-2xl transition-all"
               >
@@ -160,10 +160,10 @@ export default function QRManagementPage() {
               Your Digital<br />Menu is Live
             </h2>
             <p className="text-[var(--text-secondary)] font-medium text-lg leading-relaxed">
-              Customers can scan this QR code to instantly view your full menu. 
+              Customers can scan this QR code to instantly view your full menu.
               The menu will automatically reflect your customized colors, fonts, and layout.
             </p>
-            
+
             <div className="bg-[var(--surface-2)] p-4 rounded-2xl flex items-start gap-4 mt-6 border border-[var(--border)]">
               <div className="bg-white p-2 rounded-xl text-[var(--brand)]">
                 <Smartphone size={24} />
@@ -179,29 +179,29 @@ export default function QRManagementPage() {
       </div>
 
       {/* Preview Modal */}
-      <Modal 
-        isOpen={isModalOpen} 
+      <Modal
+        isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         title={`Print QR Code`}
       >
         <div className="flex flex-col items-center py-6">
           <div className="bg-white p-8 rounded-[3rem] shadow-2xl border-2 border-[var(--border)] mb-8">
-            <QRCodeSVG 
+            <QRCodeSVG
               id="preview-qr"
-              value={qrUrl} 
+              value={qrUrl}
               size={240}
               level="H"
               fgColor="#1a1a1a"
             />
           </div>
           <div className="grid grid-cols-2 gap-4 w-full">
-            <button 
+            <button
               onClick={() => downloadQR('preview-qr', restaurant.name)}
               className="btn btn-primary gap-2"
             >
               <Download size={18} /> Download PNG
             </button>
-            <button 
+            <button
               onClick={() => window.print()}
               className="btn btn-ghost gap-2"
             >

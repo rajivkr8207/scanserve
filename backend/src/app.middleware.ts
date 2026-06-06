@@ -39,7 +39,7 @@ export const appMiddleware = (app: express.Application) => {
   app.use(compression());
   app.use(
     cors({
-      origin: ['http://localhost:3000'],
+      origin: ["http://localhost:3000", "http://localhost:5173"],
       methods: ["POST", "PUT", "GET", "DELETE", "PATCH"],
       credentials: true,
     }),

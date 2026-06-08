@@ -19,6 +19,8 @@ type Config = {
   readonly GOOGLE_CLIENT_ID?: string;
   readonly CLIENT_SECRET?: string;
   readonly IMAGE_KIT?: string;
+  readonly RAZORPAY_KEY?: string;
+  readonly RAZORPAY_SECRET?: string;
 };
 
 export const ENV: Config = {
@@ -38,4 +40,6 @@ export const ENV: Config = {
   GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID || '',
   CLIENT_SECRET: process.env.CLIENT_SECRET || '',
   IMAGE_KIT: process.env.IMAGE_KIT || '',
+  RAZORPAY_KEY: process.env.RAZORPAY_KEY || '',
+  RAZORPAY_SECRET: process.env.RAZORPAY_SECRET || '',
 };

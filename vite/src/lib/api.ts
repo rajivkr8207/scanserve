@@ -11,15 +11,19 @@ api.interceptors.response.use(
     async (error) => {
         let originalReq = error.config;
 
-        if (error.response.status === 401 && !originalReq.retry) {
+        if (error.response?.status === 401 && !originalReq.retry && !originalReq.url?.includes("/auth/refresh-token")) {
             originalReq.retry = true;
             try {
                 await api.post("/auth/refresh-token");
                 return api(originalReq);
-            } catch (error) {
-                window.location.href = "/";
-                return Promise.reject(error);
+            } catch (refreshError) {
+                // Do not redirect to login if the user is on the public menu page
+                if (!window.location.pathname.startsWith("/menu")) {
+                    window.location.href = "/";
+                }
+                return Promise.reject(refreshError);
             }
         }
+        return Promise.reject(error);
     }
 );

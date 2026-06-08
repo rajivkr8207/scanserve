@@ -43,6 +43,12 @@ const orderSchema = new mongoose.Schema(
             trim: true,
         },
 
+        customerPhone: {
+            type: String,
+            trim: true,
+            default: "",
+        },
+
         restaurant: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Restaurant",

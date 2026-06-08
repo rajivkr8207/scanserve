@@ -15,8 +15,14 @@ export const updatePaymentStatus = async (orderId: string, paymentStatus: string
     return res.data;
 };
 
+export const getAnalytics = async () => {
+    const res = await api.get('/order/restaurant/analytics');
+    return res.data;
+};
+
 export const SellerOrderServices = {
     getRestaurantOrders,
     updateOrderStatus,
     updatePaymentStatus,
+    getAnalytics,
 };

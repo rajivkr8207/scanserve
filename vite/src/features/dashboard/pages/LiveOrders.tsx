@@ -15,6 +15,7 @@ interface Order {
     _id: string;
     customerName: string;
     customerEmail: string;
+    customerPhone?: string;
     items: OrderItem[];
     totalPrice: number;
     orderStatus: string;
@@ -333,9 +334,14 @@ const LiveOrders = () => {
                                     {/* Customer info */}
                                     <div className="px-5 py-3 bg-slate-50/60 border-b border-slate-100">
                                         <p className="text-sm font-semibold text-slate-700">{order.customerName}</p>
-                                        <p className="text-xs text-slate-400">{order.customerEmail}</p>
-                                        {/* <p className="text-xs text-slate-400">{order?.customerPhone}</p> */}
-
+                                        <div className="flex flex-col mt-0.5">
+                                            <p className="text-xs text-slate-400">{order.customerEmail}</p>
+                                            {order.customerPhone && (
+                                                <p className="text-xs text-slate-500 font-medium flex items-center gap-1 mt-0.5">
+                                                    <span>📞</span> {order.customerPhone}
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
 
                                     {/* Items */}

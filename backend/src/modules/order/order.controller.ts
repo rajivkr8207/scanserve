@@ -69,3 +69,8 @@ export const updatePaymentStatus = asyncHandler(async (req: Request, res: Respon
   emitOrderStatusUpdated(order.restaurant.toString(), order);
   return res.status(200).json(new ApiResponse(200, order, 'Payment status updated successfully'));
 });
+
+export const getRestaurantAnalytics = asyncHandler(async (req: Request, res: Response) => {
+  const analytics = await OrderService.getRestaurantAnalytics(req.user.id);
+  return res.status(200).json(new ApiResponse(200, analytics, 'Analytics fetched successfully'));
+});

@@ -68,5 +68,62 @@ export const OrderService = {
     }
 
     return order;
+  },
+
+  async getRestaurantAnalytics(sellerId: string) {
+    const restaurant = await Restaurant.findOne({ seller: sellerId });
+    if (!restaurant) {
+      throw new ApiError(404, 'Restaurant not found');
+    }
+
+    const now = new Date();
+    
+    // Server-local start of days
+    const startOfToday = new Date(now);
+    startOfToday.setHours(0, 0, 0, 0);
+    
+    const startOfYesterday = new Date(startOfToday);
+    startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+    
+    const startOf7DaysAgo = new Date(startOfToday);
+    startOf7DaysAgo.setDate(startOf7DaysAgo.getDate() - 6);
+    
+    const startOfMonth = new Date(startOfToday);
+    startOfMonth.setDate(1);
+
+    // Using MongoDB aggregate for performance
+    const pipeline = (startDate: Date, endDate: Date) => [
+        {
+            $match: {
+                restaurant: restaurant._id,
+                createdAt: { $gte: startDate, $lt: endDate }
+            }
+        },
+        {
+            $group: {
+                _id: null,
+                totalOrders: { $sum: 1 },
+                revenue: {
+                    $sum: {
+                        $cond: [{ $eq: ["$paymentStatus", "paid"] }, "$totalPrice", 0]
+                    }
+                }
+            }
+        }
+    ];
+
+    const todayResult = await Order.aggregate(pipeline(startOfToday, now));
+    const yesterdayResult = await Order.aggregate(pipeline(startOfYesterday, startOfToday));
+    const weekResult = await Order.aggregate(pipeline(startOf7DaysAgo, now));
+    const monthResult = await Order.aggregate(pipeline(startOfMonth, now));
+
+    const formatResult = (res: any[]) => res.length > 0 ? { totalOrders: res[0].totalOrders, revenue: res[0].revenue } : { totalOrders: 0, revenue: 0 };
+
+    return {
+      today: formatResult(todayResult),
+      yesterday: formatResult(yesterdayResult),
+      week: formatResult(weekResult),
+      month: formatResult(monthResult)
+    };
   }
 };

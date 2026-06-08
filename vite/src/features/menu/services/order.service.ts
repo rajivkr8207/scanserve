@@ -10,6 +10,16 @@ export const createOrder = async (orderData: any) => {
     return res.data;
 };
 
+export const verifyPayment = async (data: {
+    razorpayOrderId: string;
+    razorpayPaymentId: string;
+    razorpaySignature: string;
+}) => {
+    const res = await publicApi.post("/payment/verify", data);
+    return res.data;
+};
+
 export const OrderServices = {
     createOrder,
+    verifyPayment,
 };

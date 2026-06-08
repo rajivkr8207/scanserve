@@ -3,18 +3,29 @@ import { asyncHandler } from '../../utils/asyncHandler.js';
 import { OrderService } from './order.service.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 import { Createorder } from '../../services/payment.service.js';
+import { Payment } from '../payment/payment.model.js';
 
 export const createOrder = asyncHandler(async (req: Request, res: Response) => {
   const order = await OrderService.createOrder(req.body);
-  
+
   if (req.body.paymentMethod === 'online') {
     const paymentorder = await Createorder({
       amount: order.totalPrice,
       currency: "INR"
     });
+    await Payment.create({
+      orderId: order._id.toString(),
+      paymentId: paymentorder.id,
+      amount: order.totalPrice,
+      currency: 'INR',
+      userName: order.customerName,
+      email: order.customerEmail,
+      phoneNumber: req.body.customerPhone || '',
+      status: 'pending',
+    });
     return res.status(201).json(new ApiResponse(201, { order, paymentorder }, 'Order created successfully'));
   }
-  
+
   return res.status(201).json(new ApiResponse(201, { order }, 'Order created successfully'));
 });
 

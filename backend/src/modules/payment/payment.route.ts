@@ -5,9 +5,8 @@ import { paymentValidator } from './payment.validator.js';
 
 const paymentRouter = express.Router();
 
-paymentRouter.use(authenticate);
-
 paymentRouter.post('/create', paymentValidator.create, createPayment);
 paymentRouter.post('/verify', paymentValidator.verify, verifyPayment);
+
 
 export default paymentRouter;

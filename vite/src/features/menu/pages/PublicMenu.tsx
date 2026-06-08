@@ -124,6 +124,7 @@ export default function PublicMenu() {
             const orderData = {
                 customerName: checkoutForm.name,
                 customerEmail: checkoutForm.email,
+                customerPhone: checkoutForm.phone,
                 restaurant: restaurant._id,
                 items: cart.map((item) => ({
                     menuItem: item._id,
@@ -137,7 +138,7 @@ export default function PublicMenu() {
             };
 
             const response = await OrderServices.createOrder(orderData);
-            
+
             if (checkoutForm.paymentMethod === 'online') {
                 const options: RazorpayOrderOptions = {
                     key: Env.RAZORPAY_KEY,
@@ -145,9 +146,19 @@ export default function PublicMenu() {
                     currency: "INR",
                     name: restaurant?.name || "ScanServe",
                     description: "Order Payment",
-                    order_id: response.data?.paymentorder?.id, 
-                    handler: (razorpayResponse) => {
+                    order_id: response.data?.paymentorder?.id,
+                    handler: async (razorpayResponse) => {
                         console.log("Payment Success: ", razorpayResponse);
+                        try {
+                            // Call backend to verify payment and update DB
+                            await OrderServices.verifyPayment({
+                                razorpayOrderId: razorpayResponse.razorpay_order_id,
+                                razorpayPaymentId: razorpayResponse.razorpay_payment_id,
+                                razorpaySignature: razorpayResponse.razorpay_signature,
+                            });
+                        } catch (verifyErr) {
+                            console.error("Payment verification failed:", verifyErr);
+                        }
                         setOrderSuccess(true);
                         setCart([]);
                         setTimeout(() => {
@@ -164,7 +175,7 @@ export default function PublicMenu() {
                         color: "#4f46e5",
                     },
                 };
-    
+
                 const razorpayInstance = new Razorpay(options);
                 razorpayInstance.open();
             } else {

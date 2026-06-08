@@ -5,6 +5,18 @@ const paymentSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    userName: {
+        type: String,
+        required: true,
+    },
+    email: {
+        type: String,
+        required: true,
+    },
+    phoneNumber: {
+        type: String,
+        default: '',
+    },
     paymentId: {
         type: String,
     },

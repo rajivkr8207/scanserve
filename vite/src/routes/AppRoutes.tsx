@@ -20,6 +20,7 @@ import ManageCategory from "../features/restaurant/pages/ManageCategory";
 import ManageMenu from "../features/restaurant/pages/ManageMenu";
 import ManageQR from "../features/restaurant/pages/ManageQR";
 import PublicMenu from "../features/menu/pages/PublicMenu";
+import LiveOrders from "../features/dashboard/pages/LiveOrders";
 
 const AppRoutes = () => {
   console.log("appRoutes");
@@ -73,6 +74,7 @@ const AppRoutes = () => {
             { path: "restaurant/categories", element: <ManageCategory /> },
             { path: "restaurant/menus", element: <ManageMenu /> },
             { path: "restaurant/qr", element: <ManageQR /> },
+            { path: "orders", element: <LiveOrders /> },
           ],
         },
       ],

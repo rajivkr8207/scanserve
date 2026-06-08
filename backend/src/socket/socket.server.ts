@@ -1,5 +1,6 @@
 import { Server } from 'socket.io'
 import { handleSocketChat } from './chat.socket.js';
+import { handleOrderSocket } from './order.socket.js';
 import { ENV } from '../config/env.js';
 import logger from '../config/logger.js';
 
@@ -17,8 +18,8 @@ export function initSocket(httpServer: any) {
     io.on('connection', (socket: any) => {
         logger.info(`user is connected`, socket.id);
 
-
         handleSocketChat(socket);
+        handleOrderSocket(socket);
 
         socket.on("disconnect", () => {
             logger.info("User disconnected:", socket.id);

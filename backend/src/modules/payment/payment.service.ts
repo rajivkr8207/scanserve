@@ -67,9 +67,14 @@ export const PaymentService = {
     }
 
     // orderId is the local Order document id
-    await Order.findByIdAndUpdate(payment.orderId, {
+    const updatedOrder = await Order.findByIdAndUpdate(payment.orderId, {
       paymentStatus: 'paid',
-    });
+    }, { new: true });
+
+    if (updatedOrder) {
+      const { emitOrderStatusUpdated } = await import('../../socket/order.socket.js');
+      emitOrderStatusUpdated(updatedOrder.restaurant.toString(), updatedOrder);
+    }
 
     return payment;
   },

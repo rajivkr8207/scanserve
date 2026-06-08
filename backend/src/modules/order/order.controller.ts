@@ -4,6 +4,7 @@ import { OrderService } from './order.service.js';
 import { ApiResponse } from '../../utils/ApiResponse.js';
 import { Createorder } from '../../services/payment.service.js';
 import { Payment } from '../payment/payment.model.js';
+import { emitNewOrder, emitOrderStatusUpdated } from '../../socket/order.socket.js';
 
 export const createOrder = asyncHandler(async (req: Request, res: Response) => {
   const order = await OrderService.createOrder(req.body);
@@ -23,11 +24,19 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
       phoneNumber: req.body.customerPhone || '',
       status: 'pending',
     });
+
+    // Emit live event to seller dashboard
+    emitNewOrder(order.restaurant.toString(), order);
+
     return res.status(201).json(new ApiResponse(201, { order, paymentorder }, 'Order created successfully'));
   }
 
+  // Cash payment — emit live event immediately
+  emitNewOrder(order.restaurant.toString(), order);
+
   return res.status(201).json(new ApiResponse(201, { order }, 'Order created successfully'));
 });
+
 
 export const getOrderById = asyncHandler(async (req: Request, res: Response) => {
   const order = await OrderService.getOrderById(req.params.id as string);
@@ -46,6 +55,8 @@ export const updateOrderStatus = asyncHandler(async (req: Request, res: Response
     req.user.id,
     req.body.orderStatus
   );
+  // Notify all connected sellers of this restaurant in real-time
+  emitOrderStatusUpdated(order.restaurant.toString(), order);
   return res.status(200).json(new ApiResponse(200, order, 'Order status updated successfully'));
 });
 
@@ -55,5 +66,6 @@ export const updatePaymentStatus = asyncHandler(async (req: Request, res: Respon
     req.user.id,
     req.body.paymentStatus
   );
+  emitOrderStatusUpdated(order.restaurant.toString(), order);
   return res.status(200).json(new ApiResponse(200, order, 'Payment status updated successfully'));
 });

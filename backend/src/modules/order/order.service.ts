@@ -28,8 +28,14 @@ export const OrderService = {
       throw new ApiError(404, 'Restaurant not found');
     }
 
-    // Get orders for this restaurant, sorted by newest first
-    return await Order.find({ restaurant: restaurant._id }).sort({ createdAt: -1 });
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    // Get orders for this restaurant for today, sorted by newest first
+    return await Order.find({ 
+      restaurant: restaurant._id,
+      createdAt: { $gte: startOfToday }
+    }).sort({ createdAt: -1 });
   },
 
   async updateOrderStatus(orderId: string, sellerId: string, status: string) {

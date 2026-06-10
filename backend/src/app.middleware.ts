@@ -46,4 +46,5 @@ export const appMiddleware = (app: express.Application) => {
   app.use(cookieParser());
   app.use(morgan('dev'));
   app.use(compression());
+  app.use(express.static('public'))
 };

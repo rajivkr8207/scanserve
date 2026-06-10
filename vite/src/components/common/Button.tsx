@@ -1,11 +1,15 @@
-// components/Button.jsx
+import type { ReactNode, ButtonHTMLAttributes } from 'react';
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+    children: ReactNode;
+}
 
 export default function Button({
     children,
     type = "button",
     className = "",
     ...props
-}) {
+}: ButtonProps) {
     return (
         <button
             type={type as "button" | "submit" | "reset"}

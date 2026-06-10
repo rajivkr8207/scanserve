@@ -4,7 +4,8 @@ import UseAuth from "../features/auth/hooks/UseAuth";
 const navLinks = [
     { to: "/home", label: "Dashboard", icon: "🏠", end: true },
     { to: "/home/orders", label: "Live Orders", icon: "📋", end: false },
-    { to: "/home/restaurant", label: "Restaurant", icon: "🍴", end: false },
+    { to: "/home/restaurant", label: "Restaurant", icon: "🍴", end: true },
+    { to: "/home/restaurant/theme", label: "Menu Theme", icon: "🎨", end: false },
     { to: "/profile", label: "Profile", icon: "👤", end: false },
 ];
 

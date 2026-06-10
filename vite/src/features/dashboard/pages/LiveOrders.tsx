@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { getSocket } from "../../../lib/socket";
 import { SellerOrderServices } from "../services/order.service";
 import { MenuServices } from "../../restaurant/services/menu.service";
@@ -62,7 +62,6 @@ const LiveOrders = () => {
     const [paymentUpdatingId, setPaymentUpdatingId] = useState<string | null>(null);
     const [filter, setFilter] = useState<string>("all");
     const [showRevenue, setShowRevenue] = useState<boolean>(false);
-    const audioRef = useRef<HTMLAudioElement | null>(null);
 
     // Play a soft beep for new orders
     const playNotification = () => {
@@ -107,12 +106,6 @@ const LiveOrders = () => {
     // Get restaurant id from restaurant profile if orders list is empty
     useEffect(() => {
         if (restaurantId) return; // already got it from orders
-        const fetchRestaurant = async () => {
-            try {
-                const res = await MenuServices.getPublicRestaurantBySlug("");
-                // This won't work directly, but the socket join happens when restaurantId is set
-            } catch (_) { }
-        };
         // We'll get restaurantId from orders. If no orders yet, wait for socket event.
     }, [restaurantId]);
 

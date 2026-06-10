@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import AuthLayout from "../layouts/AuthLayout";
 import Login from "../features/auth/pages/Login";
@@ -21,6 +21,7 @@ import ManageMenu from "../features/restaurant/pages/ManageMenu";
 import ManageQR from "../features/restaurant/pages/ManageQR";
 import PublicMenu from "../features/menu/pages/PublicMenu";
 import LiveOrders from "../features/dashboard/pages/LiveOrders";
+import ManageTheme from "../features/restaurant/pages/ManageTheme";
 
 const AppRoutes = () => {
   console.log("appRoutes");
@@ -74,6 +75,7 @@ const AppRoutes = () => {
             { path: "restaurant/categories", element: <ManageCategory /> },
             { path: "restaurant/menus", element: <ManageMenu /> },
             { path: "restaurant/qr", element: <ManageQR /> },
+            { path: "restaurant/theme", element: <ManageTheme /> },
             { path: "orders", element: <LiveOrders /> },
           ],
         },

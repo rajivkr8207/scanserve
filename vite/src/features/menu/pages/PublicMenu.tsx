@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 import { MenuServices } from "../../restaurant/services/menu.service";
 import { OrderServices } from "../services/order.service";
+import { ThemeServices, type MenuTheme } from "../../restaurant/services/theme.service";
 import { useRazorpay, type RazorpayOrderOptions } from "react-razorpay";
 import { Env } from "../../../config/Config";
 interface MenuItem {
@@ -32,16 +33,18 @@ interface Restaurant {
     slug: string;
 }
 
-export default function PublicMenu() {
-    const { slug } = useParams<{ slug: string }>();
+export default function PublicMenu({ previewTheme, previewSlug }: { previewTheme?: MenuTheme, previewSlug?: string }) {
+    const { slug: routeSlug } = useParams<{ slug: string }>();
+    const slug = previewSlug || routeSlug;
     const [items, setItems] = useState<MenuItem[]>([]);
     const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+    const [theme, setTheme] = useState<MenuTheme | null>(null);
     const [loading, setLoading] = useState(true);
     const [errors, setError] = useState("");
     const [activeCategory, setActiveCategory] = useState<string>("all");
     const [search, setSearch] = useState("");
     const [vegOnly, setVegOnly] = useState(false);
-    const { error, isLoading, Razorpay } = useRazorpay();
+    const { Razorpay } = useRazorpay();
     // Cart state
     const [cart, setCart] = useState<CartItem[]>([]);
     const [showCheckout, setShowCheckout] = useState(false);
@@ -71,12 +74,56 @@ export default function PublicMenu() {
             } catch {
                 // Restaurant info is optional
             }
+
+            if (!previewTheme) {
+                try {
+                    const themeData = await ThemeServices.getThemeBySlug(slug!);
+                    setTheme(themeData.data);
+                } catch {}
+            }
         } catch (err: any) {
             setError(err?.response?.data?.message || "Menu not found");
         } finally {
             setLoading(false);
         }
     };
+
+    const currentTheme = previewTheme || theme;
+
+    const themeStyle = {
+        '--theme-primary': currentTheme?.colors?.primary || '#4f46e5',
+        '--theme-bg': currentTheme?.colors?.background || '#f8fafc',
+        '--theme-surface': currentTheme?.colors?.surface || '#ffffff',
+        '--theme-text': currentTheme?.colors?.textPrimary || '#1e293b',
+        '--theme-text-muted': currentTheme?.colors?.textSecondary || '#64748b',
+        '--theme-button': currentTheme?.colors?.buttonColor || '#4f46e5',
+        '--theme-button-text': currentTheme?.colors?.buttonTextColor || '#ffffff',
+        '--theme-success': currentTheme?.colors?.success || '#16a34a',
+        '--theme-danger': currentTheme?.colors?.danger || '#dc2626',
+        '--theme-radius': `${currentTheme?.layout?.borderRadius || 16}px`,
+    } as React.CSSProperties;
+
+    // Computed branding
+    const displayLogo = currentTheme?.branding?.logo || restaurant?.logo;
+    const displayName = currentTheme?.branding?.restaurantName || restaurant?.name || slug;
+    const displayDesc = currentTheme?.branding?.tagline || restaurant?.description;
+
+    // Visibility shortcuts
+    const showSearch = currentTheme?.visibility?.showSearch ?? true;
+    const showCategory = currentTheme?.visibility?.showCategory ?? true;
+    const showVegBadge = currentTheme?.visibility?.showVegBadge ?? true;
+    const showDesc = currentTheme?.visibility?.showDescription ?? true;
+    const showPrice = currentTheme?.visibility?.showPrice ?? true;
+
+    // Layout shortcuts
+    const isList = currentTheme?.layout?.templateStyle === 'list';
+    const isGrid = currentTheme?.layout?.templateStyle === 'grid';
+    const isGlass = currentTheme?.effects?.glassmorphism;
+    const isGradient = currentTheme?.effects?.gradientBackground;
+
+    const surfaceClass = isGlass 
+        ? "bg-[var(--theme-surface)]/70 backdrop-blur-md border-[var(--theme-surface)]/50" 
+        : "bg-[var(--theme-surface)]";
 
     // Cart Handlers
     const addToCart = (item: MenuItem) => {
@@ -240,9 +287,21 @@ export default function PublicMenu() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 pb-24 relative">
+        <div className={`min-h-screen pb-24 relative transition-colors duration-300 font-body ${isGradient ? 'bg-gradient-to-br from-[var(--theme-bg)] to-[var(--theme-surface)]' : ''}`} 
+             style={{ 
+                 ...themeStyle, 
+                 backgroundColor: isGradient ? undefined : 'var(--theme-bg)', 
+                 color: 'var(--theme-text)' 
+             }}>
+             <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=${currentTheme?.typography?.headingFont?.replace(/ /g, '+') || 'Inter'}:wght@400;600;700;800&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=${currentTheme?.typography?.bodyFont?.replace(/ /g, '+') || 'Inter'}:wght@400;500;600&display=swap');
+                .font-heading { font-family: '${currentTheme?.typography?.headingFont || 'Inter'}', sans-serif !important; }
+                .font-body { font-family: '${currentTheme?.typography?.bodyFont || 'Inter'}', sans-serif !important; }
+             `}</style>
+
             {/* Hero / Restaurant Header */}
-            <div className="relative bg-gradient-to-r from-indigo-900 via-purple-900 to-indigo-800 text-white overflow-hidden">
+            <div className="relative overflow-hidden transition-colors duration-300" style={{ backgroundColor: 'var(--theme-primary)', color: '#ffffff' }}>
                 {/* Background decoration */}
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-0 left-0 w-96 h-96 bg-white rounded-full -translate-x-1/2 -translate-y-1/2"></div>
@@ -250,23 +309,24 @@ export default function PublicMenu() {
                 </div>
 
                 <div className="relative max-w-3xl mx-auto px-4 py-10 text-center">
-                    {restaurant?.logo ? (
+                    {displayLogo ? (
                         <img
-                            src={restaurant.logo}
-                            alt={restaurant?.name}
+                            src={displayLogo}
+                            alt={displayName}
                             className="w-20 h-20 rounded-2xl object-cover mx-auto mb-4 ring-4 ring-white/20 shadow-2xl"
+                            style={{ borderRadius: 'var(--theme-radius)' }}
                         />
                     ) : (
-                        <div className="w-20 h-20 bg-white/10 backdrop-blur rounded-2xl mx-auto mb-4 flex items-center justify-center text-4xl shadow-2xl ring-4 ring-white/20">
+                        <div className="w-20 h-20 bg-white/10 backdrop-blur mx-auto mb-4 flex items-center justify-center text-4xl shadow-2xl ring-4 ring-white/20" style={{ borderRadius: 'var(--theme-radius)' }}>
                             🍽️
                         </div>
                     )}
-                    <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                        {restaurant?.name || slug}
+                    <h1 className="text-3xl md:text-4xl font-bold mb-2 font-heading">
+                        {displayName}
                     </h1>
-                    {restaurant?.description && (
-                        <p className="text-indigo-200 text-sm max-w-md mx-auto leading-relaxed">
-                            {restaurant.description}
+                    {displayDesc && (
+                        <p className="text-white/80 text-sm max-w-md mx-auto leading-relaxed font-body">
+                            {displayDesc}
                         </p>
                     )}
 
@@ -294,11 +354,13 @@ export default function PublicMenu() {
             </div>
 
             {/* Sticky Controls */}
-            <div className="sticky top-0 z-20 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm">
+            {(showSearch || showCategory) && (
+            <div className={`sticky top-0 z-20 ${isGlass ? 'bg-[var(--theme-bg)]/80 backdrop-blur-lg' : 'bg-[var(--theme-bg)]'} border-b border-black/5 shadow-sm`}>
                 <div className="max-w-3xl mx-auto px-4 py-3 space-y-3">
                     {/* Search */}
+                    {showSearch && (
                     <div className="relative">
-                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: 'var(--theme-text-muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                         <input
@@ -306,48 +368,66 @@ export default function PublicMenu() {
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
                             placeholder="Search dishes..."
-                            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none bg-slate-50"
+                            className="w-full pl-10 pr-4 py-2.5 rounded-xl border focus:ring-2 focus:border-transparent outline-none transition-shadow"
+                            style={{ backgroundColor: 'var(--theme-surface)', borderColor: 'var(--theme-text-muted)', color: 'var(--theme-text)' }}
                         />
                     </div>
+                    )}
 
                     {/* Category Tabs + Veg filter */}
                     <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                        <button
-                            onClick={() => setActiveCategory("all")}
-                            className={`flex-shrink-0 text-xs font-semibold px-4 py-2 rounded-full transition-all ${activeCategory === "all"
-                                ? "bg-indigo-600 text-white shadow-sm"
-                                : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                                }`}
-                        >
-                            All
-                        </button>
-                        {categories.map((cat) => (
-                            <button
-                                key={cat._id}
-                                onClick={() => setActiveCategory(cat._id)}
-                                className={`flex-shrink-0 text-xs font-semibold px-4 py-2 rounded-full transition-all ${activeCategory === cat._id
-                                    ? "bg-indigo-600 text-white shadow-sm"
-                                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                                    }`}
-                            >
-                                {cat.name}
-                            </button>
-                        ))}
+                        {showCategory && (
+                            <>
+                                <button
+                                    onClick={() => setActiveCategory("all")}
+                                    className={`flex-shrink-0 text-xs font-semibold px-4 py-2 transition-all shadow-sm`}
+                                    style={{
+                                        backgroundColor: activeCategory === "all" ? 'var(--theme-primary)' : 'var(--theme-surface)',
+                                        color: activeCategory === "all" ? '#ffffff' : 'var(--theme-text-muted)',
+                                        border: '1px solid var(--theme-text-muted)',
+                                        borderRadius: 'var(--theme-radius)'
+                                    }}
+                                >
+                                    All
+                                </button>
+                                {categories.map((cat) => (
+                                    <button
+                                        key={cat._id}
+                                        onClick={() => setActiveCategory(cat._id)}
+                                        className={`flex-shrink-0 text-xs font-semibold px-4 py-2 transition-all shadow-sm`}
+                                        style={{
+                                            backgroundColor: activeCategory === cat._id ? 'var(--theme-primary)' : 'var(--theme-surface)',
+                                            color: activeCategory === cat._id ? '#ffffff' : 'var(--theme-text-muted)',
+                                            border: '1px solid var(--theme-text-muted)',
+                                            borderRadius: 'var(--theme-radius)'
+                                        }}
+                                    >
+                                        {cat.name}
+                                    </button>
+                                ))}
+                            </>
+                        )}
 
                         {/* Veg toggle */}
-                        <button
-                            onClick={() => setVegOnly(!vegOnly)}
-                            className={`flex-shrink-0 flex items-center gap-1.5 text-xs font-semibold px-4 py-2 rounded-full transition-all ml-auto ${vegOnly
-                                ? "bg-green-500 text-white"
-                                : "bg-green-50 text-green-700 border border-green-200"
-                                }`}
-                        >
-                            <span className="w-3 h-3 rounded-sm border-2 border-green-500 bg-green-500 inline-block"></span>
-                            Veg Only
-                        </button>
+                        {showVegBadge && (
+                            <button
+                                onClick={() => setVegOnly(!vegOnly)}
+                                className={`flex-shrink-0 flex items-center gap-1.5 text-xs font-semibold px-4 py-2 transition-all ml-auto`}
+                                style={{
+                                    backgroundColor: vegOnly ? 'var(--theme-success)' : 'transparent',
+                                    color: vegOnly ? '#ffffff' : 'var(--theme-success)',
+                                    border: `1px solid var(--theme-success)`,
+                                    borderRadius: 'var(--theme-radius)'
+                                }}
+                            >
+                                <span className="w-3 h-3 rounded-sm border-2 inline-block" style={{ borderColor: vegOnly ? '#ffffff' : 'var(--theme-success)', backgroundColor: 'var(--theme-success)' }}></span>
+                                Veg Only
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
+            )}
 
             {/* Menu Content */}
             <div className="max-w-3xl mx-auto px-4 py-6 space-y-8">
@@ -360,78 +440,82 @@ export default function PublicMenu() {
                     Object.entries(groupedByCategory).map(([categoryName, catItems]) => (
                         <div key={categoryName}>
                             {/* Category Heading */}
+                            {showCategory && (
                             <div className="flex items-center gap-3 mb-4">
-                                <h2 className="text-lg font-bold text-slate-800">{categoryName}</h2>
-                                <div className="flex-1 h-px bg-slate-100"></div>
-                                <span className="text-xs text-slate-400 font-medium">{catItems.length} items</span>
+                                <h2 className="text-xl font-bold font-heading" style={{ color: 'var(--theme-text)' }}>{categoryName}</h2>
+                                <div className="flex-1 h-px bg-black/10"></div>
+                                <span className="text-xs font-medium" style={{ color: 'var(--theme-text-muted)' }}>{catItems.length} items</span>
                             </div>
+                            )}
 
                             {/* Items Grid */}
-                            <div className="space-y-3">
+                            <div className={`grid gap-4 ${isGrid ? 'grid-cols-2 md:grid-cols-3' : 'grid-cols-1 md:grid-cols-2'}`}>
                                 {catItems.map((item) => {
                                     const quantity = getCartQuantity(item._id);
 
                                     return (
                                         <div
                                             key={item._id}
-                                            className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm hover:shadow-md transition-all group"
+                                            className={`border border-black/5 p-4 shadow-sm hover:shadow-md transition-all group ${surfaceClass} ${isList ? 'flex items-center gap-4' : 'flex flex-col'}`}
+                                            style={{ borderRadius: 'var(--theme-radius)' }}
                                         >
-                                            <div className="flex items-start justify-between gap-4">
-                                                <div className="flex-1 min-w-0">
-                                                    <div className="flex items-center gap-2 mb-1">
-                                                        {/* Veg/Non-veg indicator */}
-                                                        <span className={`flex-shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-sm border-2 ${item.isVeg
-                                                            ? "border-green-600"
-                                                            : "border-red-600"
-                                                            }`}>
-                                                            <span className={`w-2 h-2 rounded-full ${item.isVeg ? "bg-green-600" : "bg-red-600"
-                                                                }`}></span>
-                                                        </span>
-                                                        <h3 className="font-semibold text-slate-800 text-sm truncate group-hover:text-indigo-700 transition-colors">
-                                                            {item.name}
-                                                        </h3>
-                                                    </div>
-                                                    {item.description && (
-                                                        <p className="text-slate-400 text-xs leading-relaxed mt-1 line-clamp-2">
-                                                            {item.description}
-                                                        </p>
+                                            <div className={`flex-1 min-w-0 ${isList ? '' : 'mb-3'}`}>
+                                                <div className="flex items-center gap-2 mb-1">
+                                                    {/* Veg/Non-veg indicator */}
+                                                    {showVegBadge && (
+                                                    <span className="flex-shrink-0 inline-flex items-center justify-center w-4 h-4 rounded-sm border-2" style={{ borderColor: item.isVeg ? 'var(--theme-success)' : 'var(--theme-danger)' }}>
+                                                        <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.isVeg ? 'var(--theme-success)' : 'var(--theme-danger)' }}></span>
+                                                    </span>
                                                     )}
-                                                    <div className="mt-2">
-                                                        <span className="text-lg font-bold text-slate-800">
-                                                            ₹{item.price}
-                                                        </span>
-                                                    </div>
+                                                    <h3 className="font-semibold text-sm truncate font-heading group-hover:opacity-80 transition-opacity" style={{ color: 'var(--theme-text)' }}>
+                                                        {item.name}
+                                                    </h3>
                                                 </div>
+                                                {showDesc && item.description && (
+                                                    <p className="text-xs leading-relaxed mt-1 line-clamp-2" style={{ color: 'var(--theme-text-muted)' }}>
+                                                        {item.description}
+                                                    </p>
+                                                )}
+                                                {showPrice && (
+                                                <div className="mt-2">
+                                                    <span className="text-lg font-bold" style={{ color: 'var(--theme-text)' }}>
+                                                        ₹{item.price}
+                                                    </span>
+                                                </div>
+                                                )}
+                                            </div>
 
-                                                {/* Add to Cart Actions */}
-                                                <div className="flex-shrink-0 flex items-end justify-end h-full mt-2">
-                                                    {quantity > 0 ? (
-                                                        <div className="flex items-center bg-indigo-50 rounded-lg border border-indigo-100">
-                                                            <button
-                                                                onClick={() => decrementQuantity(item._id)}
-                                                                className="w-8 h-8 flex items-center justify-center text-indigo-600 hover:bg-indigo-100 rounded-l-lg transition-colors font-bold"
-                                                            >
-                                                                -
-                                                            </button>
-                                                            <span className="w-8 text-center text-sm font-semibold text-indigo-900">
-                                                                {quantity}
-                                                            </span>
-                                                            <button
-                                                                onClick={() => addToCart(item)}
-                                                                className="w-8 h-8 flex items-center justify-center text-indigo-600 hover:bg-indigo-100 rounded-r-lg transition-colors font-bold"
-                                                            >
-                                                                +
-                                                            </button>
-                                                        </div>
-                                                    ) : (
+                                            {/* Add to Cart Actions */}
+                                            <div className="flex-shrink-0 flex items-end justify-end mt-2">
+                                                {quantity > 0 ? (
+                                                    <div className="flex items-center border" style={{ borderColor: 'var(--theme-primary)', backgroundColor: 'transparent', borderRadius: 'var(--theme-radius)' }}>
+                                                        <button
+                                                            onClick={() => decrementQuantity(item._id)}
+                                                            className="w-8 h-8 flex items-center justify-center transition-colors font-bold text-lg"
+                                                            style={{ color: 'var(--theme-primary)' }}
+                                                        >
+                                                            -
+                                                        </button>
+                                                        <span className="w-8 text-center text-sm font-bold" style={{ color: 'var(--theme-text)' }}>
+                                                            {quantity}
+                                                        </span>
                                                         <button
                                                             onClick={() => addToCart(item)}
-                                                            className="px-4 py-1.5 bg-white border border-indigo-200 text-indigo-600 font-semibold text-sm rounded-lg hover:bg-indigo-50 transition-colors shadow-sm"
+                                                            className="w-8 h-8 flex items-center justify-center transition-colors font-bold text-lg"
+                                                            style={{ color: 'var(--theme-primary)' }}
                                                         >
-                                                            ADD +
+                                                            +
                                                         </button>
-                                                    )}
-                                                </div>
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => addToCart(item)}
+                                                        className="px-4 py-2 font-bold text-sm transition-transform active:scale-95 shadow-sm"
+                                                        style={{ color: 'var(--theme-button-text)', backgroundColor: 'var(--theme-button)', borderRadius: 'var(--theme-radius)' }}
+                                                    >
+                                                        {currentTheme?.buttons?.addToCartText || "ADD +"}
+                                                    </button>
+                                                )}
                                             </div>
                                         </div>
                                     );

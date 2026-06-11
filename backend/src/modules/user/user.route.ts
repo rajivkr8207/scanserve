@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import {
   forgotPassword,
+  genrateNewAccessToken,
   getCurrentUser,
   loginUser,
   Logout,
@@ -19,6 +20,7 @@ authRouter.post('/register', userValidator.register, registerUser);
 authRouter.post('/login', userValidator.login, loginUser);
 authRouter.post('/logout', Logout);
 authRouter.get('/profile', authenticate, getCurrentUser);
+authRouter.post('/refresh-token', genrateNewAccessToken);
 authRouter.post('/resend-otp/:email', ResendOtp);
 authRouter.post('/verify-reset/:email', verifyForgotPasswordOtp);
 authRouter.post('/verify/:email', userValidator.verify, verifyUser);

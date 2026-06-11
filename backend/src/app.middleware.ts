@@ -9,7 +9,7 @@ import { loggingMiddleware } from './middlewares/logger.middleware.js';
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 100,
+  limit: 5000, // Increased limit for local development hot-reloading
   standardHeaders: 'draft-7',
   legacyHeaders: false,
   message: 'Too many requests from this IP, please try again after 15 minutes',
@@ -28,6 +28,15 @@ const blockUnwantedRequests = (
 };
 
 export const appMiddleware = (app: express.Application) => {
+  // CORS MUST be first so that all responses (even errors like 429) get CORS headers
+  app.use(
+    cors({
+      origin: ["http://localhost:3000", "http://localhost:5173"],
+      methods: ["POST", "PUT", "GET", "DELETE", "PATCH"],
+      credentials: true,
+    }),
+  );
+
   app.use(loggingMiddleware);
   app.use(helmet());
   app.use(limiter);
@@ -37,11 +46,5 @@ export const appMiddleware = (app: express.Application) => {
   app.use(cookieParser());
   app.use(morgan('dev'));
   app.use(compression());
-  app.use(
-    cors({
-      origin: ['http://localhost:3000'],
-      methods: ["POST", "PUT", "GET", "DELETE", "PATCH"],
-      credentials: true,
-    }),
-  );
+  app.use(express.static('public'))
 };

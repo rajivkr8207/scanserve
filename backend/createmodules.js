@@ -20,4 +20,4 @@ export function makeModule(name) {
   });
 }
 
-// makeModule('menu');
+makeModule('payment');

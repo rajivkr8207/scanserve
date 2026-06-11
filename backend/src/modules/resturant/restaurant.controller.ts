@@ -12,7 +12,7 @@ export const createRestaurant = asyncHandler(async (req: Request, res: Response)
 export const getMyRestaurant = asyncHandler(async (req: Request, res: Response) => {
   const restaurant = await RestaurantService.getRestaurantBySeller(req.user.id);
   if (!restaurant) {
-    throw new ApiError(404, 'No restaurant found for this seller');
+    throw new ApiError(409, 'No restaurant found for this seller');
   }
   return res.status(200).json(new ApiResponse(200, restaurant, 'Restaurant fetched successfully'));
 });

@@ -5,7 +5,6 @@ export const categoryValidator = {
   create: [
     body('name').notEmpty().withMessage('Category name is required').trim(),
     body('description').optional().trim(),
-    body('sortOrder').optional().isNumeric().withMessage('Sort order must be a number'),
     validate,
   ],
   update: [
